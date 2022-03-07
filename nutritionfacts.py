@@ -4,10 +4,9 @@ import basics
 # Fonction :
 
 
-
 def generateMeal(mealList: list) -> list:
     """
-    Generate a list of possible meal can be done with all meat given 
+    Generate a list of possible meal can be done with all meat given
     """
     listOfPossibleMeal = []
     for prot in mealList[0]:
@@ -35,19 +34,28 @@ def mealComposition(meal: list, listQuantity: list, listOfDict: list) -> None:
     unity = ["kcal", "g protein", "g carb", "g fat"]
     total = [0]*len(unity)
     template = f'The meal is composed of : \n {"-":-^105}\n'
+
     for i in range(len(meal)):
-        template += f'-   {listQuantity[i]}g of {meal[i]: >25}, contributing {"": ^5}'
+        template += f'-   {listQuantity[i]}g of {meal[i]: >25}, \
+            contributing {"": ^5}'
+
         for j in range(len(listOfDict)):
             values = (listOfDict[j][meal[i]] * listQuantity[i])/1000
             template += f'{values: >5.1f} {unity[j]}'
             total[j] += values
-            template += basics.comaIntoDot(j,len(listOfDict))
+            template += basics.comaIntoDot(j, len(listOfDict))
         template += "\n"
     template += f'{"-":-^105}\n TOTAL: {"": >43}'
+
     for i in range(len(unity)):
         template += f"{total[i]:.1f} {unity[i]}"
-        template += basics.comaIntoDot(i,len(listOfDict))
+        template += basics.comaIntoDot(i, len(listOfDict))
     print(template+"\n")
+
+
+def askExtra(listOfElem: list) -> dict:
+    for i in listOfElem:
+    pass
 # ______________________________________________________________________________
 # Variable :
 

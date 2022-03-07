@@ -13,16 +13,15 @@ def mealEnvimpact(meal: list, listOfDico: list, listQuantity) -> list:
 
 
 def printEnvimpact(listEnvimpact: list) -> None:
-    unitList = [
-        "square meters of land.",
-        "kg CO2 eq. (greenhouse gas emissions).",
-        "g SO2 eq. (acidifying emissions).",
-        "g PO43- eq. (entrophying emissions). ",
-        "L of freshwater"]
+    unitList = ["square meters of land.",
+                "kg CO2 eq. (greenhouse gas emissions).",
+                "g SO2 eq. (acidifying emissions).",
+                "g PO43- eq. (entrophying emissions). ",
+                "L of freshwater"]
     template = f'{"#":#^50}\n# Environmental impact #\n {"#":#^50}\n'
     for i in range(len(unitList)):
         if i in (0, 4):
-            template += "This meal uses\t"
+            template += 'This meal uses\t'
         else:
             template += 'This meal emits\t'
         template += f'{listEnvimpact[i]:.1f} {unitList[i]}\n'
@@ -30,14 +29,19 @@ def printEnvimpact(listEnvimpact: list) -> None:
 
 
 def thresholdsEnvimpact(thresholdsList: list, listEnvimpact: list) -> list:
+    unitList = ["meters of land",
+                "greenhouse gas emissions",
+                "acidifying emissions",
+                "entrophying emissions",
+                "freshwater used"]
     isEnvGood = []
     template = f'{"-":-^105}\n'
     for i in range(len(listEnvimpact)):
         isEnvGood.append(listEnvimpact[i] >= thresholdsList[i])
         if isEnvGood[i]:
-            template += "The amount of {unitList[i]} is too big\n"
+            template += f"The amount of {unitList[i]} is too big\n"
         else:
-            template += "The amount of {unitList[i]} is correct\n"
+            template += f"The amount of {unitList[i]} is correct\n"
     template += f'{"-":-^105}\n'
     print(template)
     return isEnvGood

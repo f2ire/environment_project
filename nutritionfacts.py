@@ -1,3 +1,4 @@
+from multiprocessing.sharedctypes import Value
 import basics
 
 # ______________________________________________________________________________
@@ -34,11 +35,9 @@ def mealComposition(meal: list, listQuantity: list, listOfDict: list) -> None:
     unity = ["kcal", "g protein", "g carb", "g fat"]
     total = [0]*len(unity)
     template = f'The meal is composed of : \n {"-":-^105}\n'
-
     for i in range(len(meal)):
-        template += f'-   {listQuantity[i]}g of {meal[i]: >25}, \
+        template += f'-   {listQuantity[i]}g of {meal[i]: >25},\
             contributing {"": ^5}'
-
         for j in range(len(listOfDict)):
             values = (listOfDict[j][meal[i]] * listQuantity[i])/1000
             template += f'{values: >5.1f} {unity[j]}'
@@ -46,16 +45,30 @@ def mealComposition(meal: list, listQuantity: list, listOfDict: list) -> None:
             template += basics.comaIntoDot(j, len(listOfDict))
         template += "\n"
     template += f'{"-":-^105}\n TOTAL: {"": >43}'
-
     for i in range(len(unity)):
         template += f"{total[i]:.1f} {unity[i]}"
         template += basics.comaIntoDot(i, len(listOfDict))
     print(template+"\n")
 
 
-def askExtra(listOfElem: list) -> dict:
-    for i in listOfElem:
-    pass
+def extraQuantity() -> dict:
+    dict_extraQuantity = {}
+    typeOfFood = ["Source of protein", "Source of carbone",
+                  "Source of fat", "Source of vegetable", "Source of fruit"]
+    it = 0
+    while it < len(typeOfFood):
+        i_Extra = input(
+            f"How many extra of {typeOfFood[it]} in gramme do you need ?\n")
+        try:
+            int_i_Extra = int(i_Extra)
+            int_i_Extra >= 0
+            it += 1
+        except ValueError:
+            print(
+                "\nERROR :\n\n!! You have to write a number superior of 0 and nothing else !!\n")
+        dict_extraQuantity[typeOfFood[it]] = i_Extra
+    return dict_extraQuantity
+
 # ______________________________________________________________________________
 # Variable :
 
@@ -165,3 +178,5 @@ listDict = [kcalDict, proteinDict, carbohydrateDict, fatDict]
 mealComposition(listOfPossibleMeal[345], quantity, listDict)
 
 # print(listOfPossibleMeal)
+print(listElem)
+dict_extraQuantity = extraQuantity()

@@ -46,6 +46,8 @@ def thresholdsEnvimpact(thresholdsList: list, listEnvimpact: list) -> list:
     print(template)
     return isEnvGood
 
+
+
 # ______________________________________________________________________________
 # Variable :
 

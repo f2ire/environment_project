@@ -1,3 +1,4 @@
+import tools
 # ______________________________________________________________________________
 # Fonction :
 
@@ -71,48 +72,34 @@ def askStatUser() -> list:
     while it < len(textToPrint):
 
         if it == 0:
-            try:
-                gender = input(textToPrint[it])
-                if gender not in ["m", "M", "f", "F"]:
-                    print(
-                        "Please precise your gender by pressing 'M' for Male"
-                        " or 'F' for female.")
-                else:
-                    userStats.append(gender)
-                    it += 1
-            except ValueError:
-                print(
-                    "Please precise your gender by pressing 'M' for Male"
-                    " or 'F' for female.")
+            genderAnswerError = "Please precise your gender by pressing 'M'"
+            "for Male or 'F' for female."
+            gender = tools.strInput(textToPrint[it], genderAnswerError)
+            if gender not in ["m", "M", "f", "F"]:
+                print(genderAnswerError)
+            else:
+                userStats.append(gender)
+                it += 1
 
         elif it < 4:
-            try:
-                val = int(input(textToPrint[it]))
-                if val <= 0:
-                    print("Please press the good unit.")
-                else:
-                    userStats.append(val)
-                    it += 1
-            except ValueError:
-                print("Please press the good unit.")
+            valAnswerError = "Please press the good unit."
+            val = tools.intInput(textToPrint[it], valAnswerError)
+            if val <= 0:
+                print(valAnswerError)
+            else:
+                userStats.append(val)
+                it += 1
         else:
-            try:
-                index_activityLvl = int(input(textToPrint[it]))
-                if index_activityLvl < 0 or index_activityLvl > 5:
-                    print("Please press a int between 1 and 5")
-                else:
-                    userStats.append(activityLvl[index_activityLvl])
-                    it += 1
-            except ValueError:
-                print("Please press a int between 1 and 5")
+            activityAnswerError = "Please press a int between 1 and 5"
+            index_activityLvl = tools.intInput(
+                textToPrint[it], activityAnswerError)
+            if index_activityLvl < 0 or index_activityLvl > 5:
+                print(activityAnswerError)
+            else:
+                userStats.append(activityLvl[index_activityLvl])
+                it += 1
+
     return userStats
-
-
-def unit_test(a: float, b: float, delta=10**-6) -> bool:
-    """
-    Try if a and b are equal with a gap smaller than delta
-    """
-    return abs(a-b) < abs(delta)
 
 # ______________________________________________________________________________
 # Variable :
@@ -122,5 +109,5 @@ def unit_test(a: float, b: float, delta=10**-6) -> bool:
 
 
 if __name__ == "__main__":
-    print(unit_test(dailyEnergyRequirement("male", 59, 175,
-                                           20, "light"), 2552))
+    print(tools.floatUnitTest(dailyEnergyRequirement("male", 59, 175,
+                                                     20, "light"), 2552))

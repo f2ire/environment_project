@@ -118,17 +118,16 @@ def extraQuantity(mealDict: dict) -> dict:
     extraSource = mealDict["extraSource"]
     it = 0
     while it < len(extraSource):
-        i_Extra = input(
-            f"How much extra of {extraSource[it]} in gramme do you need ?\n")
-        try:
-            int_i_Extra = int(i_Extra)
-            int_i_Extra >= 0
-            dict_extraQuantity[extraSource[it]] = int_i_Extra
+        extraQuestion = f"How much extra gramme of {extraSource[it]}"
+        "do you need ? \n"
+        extraAnswerError = "\nERROR :\n\nYou have to write a number"
+        "superior of 0.\n"
+        i_Extra = tools.floatInput(extraQuestion, extraAnswerError)
+        if i_Extra >= 0:
+            dict_extraQuantity[extraSource[it]] = i_Extra
             it += 1
-        except ValueError:
-            print(
-                "\nERROR :\n\n!! You have to write a number superior of 0"
-                "and nothing else !!\n")
+        else:
+            print(extraAnswerError)
     return dict_extraQuantity
 
 # ______________________________________________________________________________

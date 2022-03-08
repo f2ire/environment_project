@@ -1,5 +1,3 @@
-
-from os import stat
 import envimpact
 import energyrequirement
 import nutritionfacts
@@ -18,7 +16,7 @@ if __name__ == "__main__":
     dict_gProteinPerRetailUnit = dict_nutritions["gProteinPerRetailUnit"]
     dict_gCarbPerRetailUnit = dict_nutritions["gCarbPerRetailUnit"]
     # compute dict for env
-    df_envi = pandas.read_excel(
+    df_environment = pandas.read_excel(
         "DataS2.xlsx", 0,
         header=None, names=["products", "landUse", "ghgEmissions",
                             "acidifyingEmissions", "eutrophyingEmissions",
@@ -26,6 +24,7 @@ if __name__ == "__main__":
         index_col=0, usecols="A,E,K,W,AC,AO",
         skiprows=lambda x: x in [0, 1, 2, 46, 47, 48, 49]
     )
+    print(dict_nutritions)
     mealDict = {
         "proteinSource": ["Tofu", "Bovine Meat (beef herd)",
                           "Poultry Meat", "Eggs"],

@@ -1,4 +1,4 @@
-import nutritionfacts
+# import nutritionfacts
 
 # ______________________________________________________________________________
 # Fonction :
@@ -47,10 +47,8 @@ def thresholdsEnvimpact(thresholdsList: list, listEnvimpact: list) -> list:
     return isEnvGood
 
 
-
 # ______________________________________________________________________________
 # Variable :
-
 
 landDict = {
     "Wheat & Rye(Bread)": 2.7,
@@ -156,13 +154,16 @@ waterDict = {
 
 # ______________________________________________________________________________
 # Main program :
-listOfDico = [landDict, ghgEmDict, acidEmDict, eutEmDict, waterDict]
-listOfEnvimpact = mealEnvimpact(
-    nutritionfacts.listOfPossibleMeal[345], listOfDico,
-    nutritionfacts.quantity)
 
-printEnvimpact(listOfEnvimpact)
+if __name__ == "__main__":
+    # listOfDico = [landDict, ghgEmDict, acidEmDict, eutEmDict, waterDict]
+    # listOfEnvimpact = mealEnvimpact(
+    #     nutritionfacts.listOfPossibleMeal[345], listOfDico,
+    #     nutritionfacts.quantity)
 
-thresholds = [1, 0.5, 4, 2, 1000]
+    # printEnvimpact(listOfEnvimpact)
 
-isGoodEnv = thresholdsEnvimpact(thresholds, listOfEnvimpact)
+    # thresholds = [1, 0.5, 4, 2, 1000]
+
+    # isGoodEnv = thresholdsEnvimpact(thresholds, listOfEnvimpact)
+    pass

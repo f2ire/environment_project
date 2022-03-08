@@ -1,3 +1,4 @@
+from distutils.log import error
 import tools
 import numpy as np
 
@@ -93,19 +94,19 @@ def computeQuantity(targetCal: int, meal: list, extraDict: dict,
     # b = [prot, carb, fat]
     const = np.array([
         (0.12*targetCal/4) -
-        qVeg * proteinDict[meal[3]] -
-        qFruit * proteinDict[meal[4]] -
-        proteinDict[meal[5]] * extraDict[meal[5]],
+        qVeg * proteinDict[meal[3]]/1000 -
+        qFruit * proteinDict[meal[4]]/1000 -
+        proteinDict[meal[5]] * extraDict[meal[5]]/1000,
 
         (0.66*targetCal/4) -
-        qVeg * carbohydrateDict[meal[3]] -
-        qFruit * carbohydrateDict[meal[4]] -
-        carbohydrateDict[meal[5]] * extraDict[meal[5]],
+        qVeg * carbohydrateDict[meal[3]]/1000 -
+        qFruit * carbohydrateDict[meal[4]]/1000 -
+        carbohydrateDict[meal[5]] * extraDict[meal[5]]/1000,
 
         (0.22*targetCal/4) -
-        qVeg * fatDict[meal[3]] -
-        qFruit * fatDict[meal[4]] -
-        fatDict[meal[5]]*extraDict[meal[5]]]
+        qVeg * fatDict[meal[3]]/1000 -
+        qFruit * fatDict[meal[4]]/1000 -
+        fatDict[meal[5]]*extraDict[meal[5]]/1000]
     )
     coef = np.array([[4 * proteinDict[meal[0]],
                       4 * proteinDict[meal[1]],
@@ -223,23 +224,27 @@ carbohydrateDict = {
 
 # ______________________________________________________________________________
 # Main Program :
+try:
+    if __name__ == "__main__":
+        listOfPossibleMeal = generateMeal(mealDict)
 
-listOfPossibleMeal = generateMeal(mealDict)
+        # print(unitMealTest(mealDict, listOfPossibleMeal))
 
-# print(unitMealTest(mealDict, listOfPossibleMeal))
+        quantity = [39, 180, 16, 125, 50, 8]
+        listDict = [kcalDict, proteinDict, carbohydrateDict, fatDict]
 
-quantity = [39, 180, 16, 125, 50, 8]
-listDict = [kcalDict, proteinDict, carbohydrateDict, fatDict]
+        meal = listOfPossibleMeal[345]
 
-meal = listOfPossibleMeal[345]
-mealComposition(meal, quantity, listDict)
+        mealComposition(meal, quantity, listDict)
 
-# print(listOfPossibleMeal)
+        # print(listOfPossibleMeal)
 
-dict_extraQuantity = extraQuantity(mealDict)
+        dict_extraQuantity = extraQuantity(mealDict)
 
-listQuantityComptued = computeQuantity(500, meal, dict_extraQuantity,
-                                       proteinDict, fatDict, carbohydrateDict)
+        listQuantityComptued = computeQuantity(500, meal, dict_extraQuantity,
+                                               proteinDict, fatDict,
+                                               carbohydrateDict)
 
-
-print(listQuantityComptued)
+        print(listQuantityComptued)
+except error:
+    pass

@@ -130,102 +130,103 @@ def computeQuantity(targetCal: int, meal: list, extraDict: dict,
 # Variable :
 
 
-mealDict = {
-    "proteinSource": ["Tofu", "Bovine Meat (beef herd)",
-                      "Poultry Meat", "Eggs"],
-    "carbSource": ["Wheat & Rye(Bread)", "Maize (meal)", "Potatoes"],
-    "fatSource": ["Rapeseed Oil", "Olive Oil"],
-    "vegetable": ["Tomatoes", "Root Vegetables", "Other Vegetables"],
-    "fruit": ["Bananas", "Apples", "Berries & Grapes"],
-    "extraSource": ["Beet Sugar", "Coffee", "Dark Chocolate"]
-}
+try:
+    if __name__ == "__main__":
 
-kcalDict = {
-    "Wheat & Rye(Bread)": 2490,
-    "Maize (meal)": 3630,
-    "Potatoes": 670,
-    "Beet Sugar": 3870,
-    "Coffee": 560,
-    "Dark Chocolate": 3930,
-    "Rapeseed Oil": 8096,
-    "Olive Oil": 8096,
-    "Bananas": 600,
-    "Apples": 480,
-    "Berries & Grapes": 530,
-    "Tofu": 765,
-    "Bovine Meat (beef herd)": 1500,
-    "Poultry Meat": 1220,
-    "Eggs": 1630,
-    "Tomatoes": 170,
-    "Root Vegetables": 380,
-    "Other Vegetables": 220
-}
-proteinDict = {
-    "Wheat & Rye(Bread)": 82,
-    "Maize (meal)": 84,
-    "Potatoes": 16,
-    "Beet Sugar": 0,
-    "Coffee": 80,
-    "Dark Chocolate": 42,
-    "Rapeseed Oil": 0,
-    "Olive Oil": 0,
-    "Bananas": 7,
-    "Apples": 1,
-    "Berries & Grapes": 5,
-    "Tofu": 82,
-    "Bovine Meat (beef herd)": 185,
-    "Poultry Meat": 123,
-    "Eggs": 113,
-    "Tomatoes": 8,
-    "Root Vegetables": 9,
-    "Other Vegetables": 14
-}
-fatDict = {
-    "Wheat & Rye(Bread)": 12,
-    "Maize (meal)": 12,
-    "Potatoes": 1,
-    "Beet Sugar": 0,
-    "Coffee": 0,
-    "Dark Chocolate": 357,
-    "Rapeseed Oil": 920,
-    "Olive Oil": 920,
-    "Bananas": 3,
-    "Apples": 3,
-    "Berries & Grapes": 4,
-    "Tofu": 42,
-    "Bovine Meat (beef herd)": 79,
-    "Poultry Meat": 77,
-    "Eggs": 121,
-    "Tomatoes": 2,
-    "Root Vegetables": 2,
-    "Other Vegetables": 2
-}
-carbohydrateDict = {
-    "Wheat & Rye(Bread)": 514.1,
-    "Maize (meal)": 797.1,
-    "Potatoes": 149.3,
-    "Beet Sugar": 967.5,
-    "Coffee": 60,
-    "Dark Chocolate": 155.1,
-    "Rapeseed Oil": 0,
-    "Olive Oil": 0,
-    "Bananas": 136.4,
-    "Apples": 112.4,
-    "Berries & Grapes": 118.7,
-    "Tofu": 16.85,
-    "Bovine Meat (beef herd)": 16.2,
-    "Poultry Meat": 12.6,
-    "Eggs": 28.3,
-    "Tomatoes": 30.1,
-    "Root Vegetables": 81.6,
-    "Other Vegetables": 36.6
-}
+        mealDict = {
+            "proteinSource": ["Tofu", "Bovine Meat (beef herd)",
+                              "Poultry Meat", "Eggs"],
+            "carbSource": ["Wheat & Rye(Bread)", "Maize (meal)", "Potatoes"],
+            "fatSource": ["Rapeseed Oil", "Olive Oil"],
+            "vegetable": ["Tomatoes", "Root Vegetables", "Other Vegetables"],
+            "fruit": ["Bananas", "Apples", "Berries & Grapes"],
+            "extraSource": ["Beet Sugar", "Coffee", "Dark Chocolate"]
+        }
 
+        kcalDict = {
+            "Wheat & Rye(Bread)": 2490,
+            "Maize (meal)": 3630,
+            "Potatoes": 670,
+            "Beet Sugar": 3870,
+            "Coffee": 560,
+            "Dark Chocolate": 3930,
+            "Rapeseed Oil": 8096,
+            "Olive Oil": 8096,
+            "Bananas": 600,
+            "Apples": 480,
+            "Berries & Grapes": 530,
+            "Tofu": 765,
+            "Bovine Meat (beef herd)": 1500,
+            "Poultry Meat": 1220,
+            "Eggs": 1630,
+            "Tomatoes": 170,
+            "Root Vegetables": 380,
+            "Other Vegetables": 220
+        }
+        proteinDict = {
+            "Wheat & Rye(Bread)": 82,
+            "Maize (meal)": 84,
+            "Potatoes": 16,
+            "Beet Sugar": 0,
+            "Coffee": 80,
+            "Dark Chocolate": 42,
+            "Rapeseed Oil": 0,
+            "Olive Oil": 0,
+            "Bananas": 7,
+            "Apples": 1,
+            "Berries & Grapes": 5,
+            "Tofu": 82,
+            "Bovine Meat (beef herd)": 185,
+            "Poultry Meat": 123,
+            "Eggs": 113,
+            "Tomatoes": 8,
+            "Root Vegetables": 9,
+            "Other Vegetables": 14
+        }
+        fatDict = {
+            "Wheat & Rye(Bread)": 12,
+            "Maize (meal)": 12,
+            "Potatoes": 1,
+            "Beet Sugar": 0,
+            "Coffee": 0,
+            "Dark Chocolate": 357,
+            "Rapeseed Oil": 920,
+            "Olive Oil": 920,
+            "Bananas": 3,
+            "Apples": 3,
+            "Berries & Grapes": 4,
+            "Tofu": 42,
+            "Bovine Meat (beef herd)": 79,
+            "Poultry Meat": 77,
+            "Eggs": 121,
+            "Tomatoes": 2,
+            "Root Vegetables": 2,
+            "Other Vegetables": 2
+        }
+        carbohydrateDict = {
+            "Wheat & Rye(Bread)": 514.1,
+            "Maize (meal)": 797.1,
+            "Potatoes": 149.3,
+            "Beet Sugar": 967.5,
+            "Coffee": 60,
+            "Dark Chocolate": 155.1,
+            "Rapeseed Oil": 0,
+            "Olive Oil": 0,
+            "Bananas": 136.4,
+            "Apples": 112.4,
+            "Berries & Grapes": 118.7,
+            "Tofu": 16.85,
+            "Bovine Meat (beef herd)": 16.2,
+            "Poultry Meat": 12.6,
+            "Eggs": 28.3,
+            "Tomatoes": 30.1,
+            "Root Vegetables": 81.6,
+            "Other Vegetables": 36.6
+        }
 
 # ______________________________________________________________________________
 # Main Program :
-try:
-    if __name__ == "__main__":
+
         listOfPossibleMeal = generateMeal(mealDict)
 
         # print(unitMealTest(mealDict, listOfPossibleMeal))

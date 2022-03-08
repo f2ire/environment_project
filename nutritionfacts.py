@@ -6,7 +6,55 @@ import numpy as np
 # Fonction :
 
 
-def generateMeal(mealDict: dict) -> list:
+def computeQuantity(targetCal: int, meal: list, extraDict: dict,
+                    proteinDict: dict, fatDict: dict,
+                    carbohydrateDict: dict) -> list:
+    """
+    Compute the quantity of g needed for the meal for each component
+    and return a list [qProtSource, qCarbSource, qFatSource, qVegetable,"\
+                qFruit, qExtra]
+    """
+    qVeg = 0.125
+    qFruit = 0.05
+    # 0 : prot, 1 carb, 2 : fat, 3 : vegetable, 4 : fruit, 5 : extras
+    # b = [prot, carb, fat]
+    const = np.array([
+        (0.12*targetCal/4) -
+        qVeg * proteinDict[meal[3]] -
+        qFruit * proteinDict[meal[4]] -
+        proteinDict[meal[5]] * extraDict[meal[5]],
+
+        (0.66*targetCal/4) -
+        qVeg * carbohydrateDict[meal[3]] -
+        qFruit * carbohydrateDict[meal[4]] -
+        carbohydrateDict[meal[5]] * extraDict[meal[5]],
+
+        (0.22*targetCal/8.8) -
+        qVeg * fatDict[meal[3]] -
+        qFruit * fatDict[meal[4]] -
+        fatDict[meal[5]]*extraDict[meal[5]]]
+    )
+    coef = np.array([[proteinDict[meal[0]],
+                      proteinDict[meal[1]],
+                      proteinDict[meal[2]]],
+                     [carbohydrateDict[meal[0]],
+                      carbohydrateDict[meal[1]],
+                      carbohydrateDict[meal[2]]],
+                     [fatDict[meal[0]],
+                      fatDict[meal[1]],
+                      fatDict[meal[2]]]])
+
+    qValues = np.linalg.solve(coef, const)
+    for elem in qValues:  # Test of no null values
+        if elem < 0:
+            return ValueError("This values can't satisfy a good meal, try to"
+                              "change your extra consumption")
+    return [qValues[0], qValues[1], qValues[2],
+            qVeg, qFruit, extraDict[meal[5]]]
+
+
+def generateMeal(mealDict: dict, extraDict: dict, targetCal: int,
+                 protDict: dict, fatDict: dict, carbonDict: dict) -> list:
     """
     Generate a list of possible meal can be done with all meat given
     """
@@ -17,8 +65,12 @@ def generateMeal(mealDict: dict) -> list:
                 for vege in mealDict["vegetable"]:
                     for fruit in mealDict["fruit"]:
                         for extra in mealDict["extraSource"]:
-                            listOfPossibleMeal.append(
-                                [prot, carb, fat, vege, fruit, extra])
+                            meal = [prot, carb, fat, vege, fruit, extra]
+                            qMeal = computeQuantity(
+                                targetCal, meal, extraDict,
+                                protDict, fatDict, carbonDict)
+                            listOfPossibleMeal.append((meal, qMeal))
+
     return listOfPossibleMeal
 
 
@@ -79,154 +131,106 @@ def extraQuantity(mealDict: dict) -> dict:
                 "and nothing else !!\n")
     return dict_extraQuantity
 
-
-def computeQuantity(targetCal: int, meal: list, extraDict: dict,
-                    proteinDict: dict, fatDict: dict,
-                    carbohydrateDict: dict) -> list:
-    """
-    Compute the quantity of g needed for the meal for each component
-    and return a list [qProtSource, qCarbSource, qFatSource, qVegetable,"\
-                qFruit, qExtra]
-    """
-    qVeg = 0.125
-    qFruit = 0.05
-    # 0 : prot, 1 carb, 2 : fat, 3 : vegetable, 4 : fruit, 5 : extras
-    # b = [prot, carb, fat]
-    const = np.array([
-        (0.12*targetCal/4) -
-        qVeg * proteinDict[meal[3]]/1000 -
-        qFruit * proteinDict[meal[4]]/1000 -
-        proteinDict[meal[5]] * extraDict[meal[5]]/1000,
-
-        (0.66*targetCal/4) -
-        qVeg * carbohydrateDict[meal[3]]/1000 -
-        qFruit * carbohydrateDict[meal[4]]/1000 -
-        carbohydrateDict[meal[5]] * extraDict[meal[5]]/1000,
-
-        (0.22*targetCal/4) -
-        qVeg * fatDict[meal[3]]/1000 -
-        qFruit * fatDict[meal[4]]/1000 -
-        fatDict[meal[5]]*extraDict[meal[5]]/1000]
-    )
-    coef = np.array([[4 * proteinDict[meal[0]],
-                      4 * proteinDict[meal[1]],
-                      4 * proteinDict[meal[2]]],
-                     [4 * carbohydrateDict[meal[0]],
-                      4 * carbohydrateDict[meal[1]],
-                      4 * carbohydrateDict[meal[2]]],
-                     [8.8 * fatDict[meal[0]],
-                      8.8 * fatDict[meal[1]],
-                      8.8*fatDict[meal[2]]]])
-
-    qValues = np.linalg.solve(coef, const)
-    for elem in qValues:  # Test of no null values
-        if elem < 0:
-            return ValueError("This values can't satisfy a good meal, try to"
-                              "change your extra consumption")
-    return [qValues[0], qValues[1], qValues[2],
-            qVeg, qFruit, extraDict[meal[5]]]
-
 # ______________________________________________________________________________
 # Variable :
 
 
-try:
-    if __name__ == "__main__":
+mealDict = {
+    "proteinSource": ["Tofu", "Bovine Meat (beef herd)",
+                      "Poultry Meat", "Eggs"],
+    "carbSource": ["Wheat & Rye(Bread)", "Maize (meal)", "Potatoes"],
+    "fatSource": ["Rapeseed Oil", "Olive Oil"],
+    "vegetable": ["Tomatoes", "Root Vegetables", "Other Vegetables"],
+    "fruit": ["Bananas", "Apples", "Berries & Grapes"],
+    "extraSource": ["Beet Sugar", "Coffee", "Dark Chocolate"]
+}
 
-        mealDict = {
-            "proteinSource": ["Tofu", "Bovine Meat (beef herd)",
-                              "Poultry Meat", "Eggs"],
-            "carbSource": ["Wheat & Rye(Bread)", "Maize (meal)", "Potatoes"],
-            "fatSource": ["Rapeseed Oil", "Olive Oil"],
-            "vegetable": ["Tomatoes", "Root Vegetables", "Other Vegetables"],
-            "fruit": ["Bananas", "Apples", "Berries & Grapes"],
-            "extraSource": ["Beet Sugar", "Coffee", "Dark Chocolate"]
-        }
+kcalDict = {
+    "Wheat & Rye(Bread)": 2490,
+    "Maize (meal)": 3630,
+    "Potatoes": 670,
+    "Beet Sugar": 3870,
+    "Coffee": 560,
+    "Dark Chocolate": 3930,
+    "Rapeseed Oil": 8096,
+    "Olive Oil": 8096,
+    "Bananas": 600,
+    "Apples": 480,
+    "Berries & Grapes": 530,
+    "Tofu": 765,
+    "Bovine Meat (beef herd)": 1500,
+    "Poultry Meat": 1220,
+    "Eggs": 1630,
+    "Tomatoes": 170,
+    "Root Vegetables": 380,
+    "Other Vegetables": 220
+}
+proteinDict = {
+    "Wheat & Rye(Bread)": 82,
+    "Maize (meal)": 84,
+    "Potatoes": 16,
+    "Beet Sugar": 0,
+    "Coffee": 80,
+    "Dark Chocolate": 42,
+    "Rapeseed Oil": 0,
+    "Olive Oil": 0,
+    "Bananas": 7,
+    "Apples": 1,
+    "Berries & Grapes": 5,
+    "Tofu": 82,
+    "Bovine Meat (beef herd)": 185,
+    "Poultry Meat": 123,
+    "Eggs": 113,
+    "Tomatoes": 8,
+    "Root Vegetables": 9,
+    "Other Vegetables": 14
+}
+fatDict = {
+    "Wheat & Rye(Bread)": 12,
+    "Maize (meal)": 12,
+    "Potatoes": 1,
+    "Beet Sugar": 0,
+    "Coffee": 0,
+    "Dark Chocolate": 357,
+    "Rapeseed Oil": 920,
+    "Olive Oil": 920,
+    "Bananas": 3,
+    "Apples": 3,
+    "Berries & Grapes": 4,
+    "Tofu": 42,
+    "Bovine Meat (beef herd)": 79,
+    "Poultry Meat": 77,
+    "Eggs": 121,
+    "Tomatoes": 2,
+    "Root Vegetables": 2,
+    "Other Vegetables": 2
+}
+carbohydrateDict = {
+    "Wheat & Rye(Bread)": 514.1,
+    "Maize (meal)": 797.1,
+    "Potatoes": 149.3,
+    "Beet Sugar": 967.5,
+    "Coffee": 60,
+    "Dark Chocolate": 155.1,
+    "Rapeseed Oil": 0,
+    "Olive Oil": 0,
+    "Bananas": 136.4,
+    "Apples": 112.4,
+    "Berries & Grapes": 118.7,
+    "Tofu": 16.85,
+    "Bovine Meat (beef herd)": 16.2,
+    "Poultry Meat": 12.6,
+    "Eggs": 28.3,
+    "Tomatoes": 30.1,
+    "Root Vegetables": 81.6,
+    "Other Vegetables": 36.6
+}
 
-        kcalDict = {
-            "Wheat & Rye(Bread)": 2490,
-            "Maize (meal)": 3630,
-            "Potatoes": 670,
-            "Beet Sugar": 3870,
-            "Coffee": 560,
-            "Dark Chocolate": 3930,
-            "Rapeseed Oil": 8096,
-            "Olive Oil": 8096,
-            "Bananas": 600,
-            "Apples": 480,
-            "Berries & Grapes": 530,
-            "Tofu": 765,
-            "Bovine Meat (beef herd)": 1500,
-            "Poultry Meat": 1220,
-            "Eggs": 1630,
-            "Tomatoes": 170,
-            "Root Vegetables": 380,
-            "Other Vegetables": 220
-        }
-        proteinDict = {
-            "Wheat & Rye(Bread)": 82,
-            "Maize (meal)": 84,
-            "Potatoes": 16,
-            "Beet Sugar": 0,
-            "Coffee": 80,
-            "Dark Chocolate": 42,
-            "Rapeseed Oil": 0,
-            "Olive Oil": 0,
-            "Bananas": 7,
-            "Apples": 1,
-            "Berries & Grapes": 5,
-            "Tofu": 82,
-            "Bovine Meat (beef herd)": 185,
-            "Poultry Meat": 123,
-            "Eggs": 113,
-            "Tomatoes": 8,
-            "Root Vegetables": 9,
-            "Other Vegetables": 14
-        }
-        fatDict = {
-            "Wheat & Rye(Bread)": 12,
-            "Maize (meal)": 12,
-            "Potatoes": 1,
-            "Beet Sugar": 0,
-            "Coffee": 0,
-            "Dark Chocolate": 357,
-            "Rapeseed Oil": 920,
-            "Olive Oil": 920,
-            "Bananas": 3,
-            "Apples": 3,
-            "Berries & Grapes": 4,
-            "Tofu": 42,
-            "Bovine Meat (beef herd)": 79,
-            "Poultry Meat": 77,
-            "Eggs": 121,
-            "Tomatoes": 2,
-            "Root Vegetables": 2,
-            "Other Vegetables": 2
-        }
-        carbohydrateDict = {
-            "Wheat & Rye(Bread)": 514.1,
-            "Maize (meal)": 797.1,
-            "Potatoes": 149.3,
-            "Beet Sugar": 967.5,
-            "Coffee": 60,
-            "Dark Chocolate": 155.1,
-            "Rapeseed Oil": 0,
-            "Olive Oil": 0,
-            "Bananas": 136.4,
-            "Apples": 112.4,
-            "Berries & Grapes": 118.7,
-            "Tofu": 16.85,
-            "Bovine Meat (beef herd)": 16.2,
-            "Poultry Meat": 12.6,
-            "Eggs": 28.3,
-            "Tomatoes": 30.1,
-            "Root Vegetables": 81.6,
-            "Other Vegetables": 36.6
-        }
 
 # ______________________________________________________________________________
 # Main Program :
-
+try:
+    if __name__ == "__main__":
         listOfPossibleMeal = generateMeal(mealDict)
 
         # print(unitMealTest(mealDict, listOfPossibleMeal))

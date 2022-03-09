@@ -1,4 +1,6 @@
-from distutils.log import error
+import itertools
+
+from pandas import melt
 import tools
 import numpy as np
 
@@ -59,17 +61,16 @@ def generateMeal(mealDict: dict, extraDict: dict, targetCal: int,
     Generate a list of possible meal can be done with all meat given
     """
     listOfPossibleMeal = []
-    for prot in mealDict["proteinSource"]:
-        for carb in mealDict["carbSource"]:
-            for fat in mealDict["fatSource"]:
-                for vege in mealDict["vegetable"]:
-                    for fruit in mealDict["fruit"]:
-                        for extra in mealDict["extraSource"]:
-                            meal = [prot, carb, fat, vege, fruit, extra]
-                            qMeal = computeQuantity(
-                                targetCal, meal, extraDict,
-                                protDict, fatDict, carbonDict)
-                            listOfPossibleMeal.append((meal, qMeal))
+    for meal in list(itertools.product(mealDict["proteinSource"],
+                                       mealDict["carbSource"],
+                                       mealDict["fatSource"],
+                                       mealDict["vegetable"],
+                                       mealDict["fruit"],
+                                       mealDict["extraSource"])):
+        qMeal = computeQuantity(
+            targetCal, meal, extraDict,
+            protDict, fatDict, carbonDict)
+        listOfPossibleMeal.append((meal, qMeal))
 
     return listOfPossibleMeal
 
@@ -228,27 +229,27 @@ carbohydrateDict = {
 
 # ______________________________________________________________________________
 # Main Program :
-try:
-    if __name__ == "__main__":
-        listOfPossibleMeal = generateMeal(mealDict)
+if __name__ == "__main__":
+    extra = extraQuantity(mealDict)
+    listOfPossibleMeal = generateMeal(
+        mealDict, extra, 1800, proteinDict, fatDict, carbohydrateDict)
+    print(listOfPossibleMeal)
 
-        # print(unitMealTest(mealDict, listOfPossibleMeal))
+    # print(unitMealTest(mealDict, listOfPossibleMeal))
 
-        quantity = [39, 180, 16, 125, 50, 8]
-        listDict = [kcalDict, proteinDict, carbohydrateDict, fatDict]
+#         quantity = [39, 180, 16, 125, 50, 8]
+#         listDict = [kcalDict, proteinDict, carbohydrateDict, fatDict]
 
-        meal = listOfPossibleMeal[345]
+#         meal = listOfPossibleMeal[345]
 
-        mealComposition(meal, quantity, listDict)
+#         mealComposition(meal, quantity, listDict)
 
-        # print(listOfPossibleMeal)
+#         # print(listOfPossibleMeal)
 
-        dict_extraQuantity = extraQuantity(mealDict)
+#         dict_extraQuantity = extraQuantity(mealDict)
 
-        listQuantityComptued = computeQuantity(500, meal, dict_extraQuantity,
-                                               proteinDict, fatDict,
-                                               carbohydrateDict)
+#         listQuantityComptued = computeQuantity(500, meal, dict_extraQuantity,
+#                                                proteinDict, fatDict,
+#                                                carbohydrateDict)
 
-        print(listQuantityComptued)
-except error:
-    pass
+#         print(listQuantityComptued)

@@ -4,8 +4,8 @@ import nutritionfacts
 import pandas
 
 if __name__ == "__main__":
-    statUser = energyrequirement.askStatUser()
-    print(statUser)
+    if input("Enter to skip : ") != "":
+        statUser = energyrequirement.askStatUser()
     # compute dict for meal
     df_nutritions = pandas.read_excel(
         "TableS1_augmented_with_FAO_data.xlsx", 0, 0, index_col=0)
@@ -24,23 +24,15 @@ if __name__ == "__main__":
         index_col=0, usecols="A,E,K,W,AC,AO",
         skiprows=lambda x: x in [0, 1, 2, 46, 47, 48, 49]
     )
-    print(dict_nutritions)
-    mealDict = {
-        "proteinSource": ["Tofu", "Bovine Meat (beef herd)",
-                          "Poultry Meat", "Eggs"],
-        "carbSource": ["Wheat & Rye(Bread)", "Maize (meal)", "Potatoes"],
-        "fatSource": ["Rapeseed Oil", "Olive Oil"],
-        "vegetable": ["Tomatoes", "Root Vegetables", "Other Vegetables"],
-        "fruit": ["Bananas", "Apples", "Berries & Grapes"],
-        "extraSource": ["Beet Sugar", "Coffee", "Dark Chocolate"]
-    }
-    # Calcul
+    mealDict = nutritionfacts.dictByProduct_toDictByType(
+        dict_nutritions["Type"])
 
     targetCal = energyrequirement.dailyEnergyRequirement(
         statUser[0], statUser[1], statUser[2], statUser[3], statUser[4])
     extraDict = nutritionfacts.extraQuantity(mealDict)
 
-    mealAndQuantity = nutritionfacts.generateMeal(mealDict,  extraDict, targetCal,
-                                                  nutritionfacts.proteinDict,
-                                                  nutritionfacts.fatDict,
-                                                  nutritionfacts.carbohydrateDict)
+    mealAndQuantity = nutritionfacts.generateMeal(mealDict,  extraDict, targetCal*0.4,
+                                                  dict_gProteinPerRetailUnit,
+                                                  dict_gFatPerRetailUnit,
+                                                  dict_gCarbPerRetailUnit)
+print(mealAndQuantity)

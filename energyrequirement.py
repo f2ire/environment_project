@@ -61,7 +61,7 @@ def askStatUser() -> list:
         "Precise your age in years : \n",
         "Precise your body weigh in Kg : \n",
         "Precise your heigh in cm : \n",
-        "Precise your activity level:"
+        "Precise your activity level:\n"
         f"Press 1 for {activityLvl[0]}\n"
         f"Press 2 for {activityLvl[1]}\n"
         f"Press 3 for {activityLvl[2]}\n"

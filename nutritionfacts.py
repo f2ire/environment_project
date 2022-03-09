@@ -1,6 +1,5 @@
 import itertools
-
-from pandas import melt
+import pandas
 import tools
 import numpy as np
 
@@ -49,10 +48,19 @@ def computeQuantity(targetCal: int, meal: list, extraDict: dict,
     qValues = np.linalg.solve(coef, const)
     for elem in qValues:  # Test of no null values
         if elem < 0:
-            return ValueError("This values can't satisfy a good meal, try to"
-                              "change your extra consumption")
+            return None
     return [qValues[0], qValues[1], qValues[2],
             qVeg, qFruit, extraDict[meal[5]]]
+
+
+def dictByProduct_toDictByType(mealDf: dict) -> dict:
+    new_dict = {}
+    for productType in mealDf.items():
+        if productType[1] in new_dict:
+            new_dict[productType[1]].append(productType[0])
+        else:
+            new_dict[productType[1]] = [productType[0]]
+    return new_dict
 
 
 def generateMeal(mealDict: dict, extraDict: dict, targetCal: int,
@@ -61,16 +69,19 @@ def generateMeal(mealDict: dict, extraDict: dict, targetCal: int,
     Generate a list of possible meal can be done with all meat given
     """
     listOfPossibleMeal = []
-    for meal in list(itertools.product(mealDict["proteinSource"],
-                                       mealDict["carbSource"],
-                                       mealDict["fatSource"],
-                                       mealDict["vegetable"],
-                                       mealDict["fruit"],
-                                       mealDict["extraSource"])):
+    for meal in list(itertools.product(mealDict["ProteinSource"],
+                                       mealDict["CarbSource"],
+                                       mealDict["FatSource"],
+                                       mealDict["Vegetable"],
+                                       mealDict["Fruit"],
+                                       mealDict["Extra"])):
         qMeal = computeQuantity(
             targetCal, meal, extraDict,
             protDict, fatDict, carbonDict)
-        listOfPossibleMeal.append((meal, qMeal))
+        if qMeal is None:
+            pass
+        else:
+            listOfPossibleMeal.append((meal, qMeal))
 
     return listOfPossibleMeal
 
@@ -116,13 +127,11 @@ def extraQuantity(mealDict: dict) -> dict:
     Return a dict of quantity of extra in g given by the user.
     """
     dict_extraQuantity = {}
-    extraSource = mealDict["extraSource"]
+    extraSource = mealDict["Extra"]
     it = 0
     while it < len(extraSource):
-        extraQuestion = f"How much extra gramme of {extraSource[it]}"
-        "do you need ? \n"
-        extraAnswerError = "\nERROR :\n\nYou have to write a number"
-        "superior of 0.\n"
+        extraQuestion = f"How much extra kg of {extraSource[it]} do you need ? \n"
+        extraAnswerError = "\nERROR :\n\nYou have to write a number superior of 0.\n"
         i_Extra = tools.floatInput(extraQuestion, extraAnswerError)
         if i_Extra >= 0:
             dict_extraQuantity[extraSource[it]] = i_Extra
@@ -136,13 +145,13 @@ def extraQuantity(mealDict: dict) -> dict:
 
 
 mealDict = {
-    "proteinSource": ["Tofu", "Bovine Meat (beef herd)",
+    "ProteinSource": ["Tofu", "Bovine Meat (beef herd)",
                       "Poultry Meat", "Eggs"],
-    "carbSource": ["Wheat & Rye(Bread)", "Maize (meal)", "Potatoes"],
-    "fatSource": ["Rapeseed Oil", "Olive Oil"],
-    "vegetable": ["Tomatoes", "Root Vegetables", "Other Vegetables"],
-    "fruit": ["Bananas", "Apples", "Berries & Grapes"],
-    "extraSource": ["Beet Sugar", "Coffee", "Dark Chocolate"]
+    "CarbSource": ["Wheat & Rye(Bread)", "Maize (meal)", "Potatoes"],
+    "FatSource": ["Rapeseed Oil", "Olive Oil"],
+    "Vegetable": ["Tomatoes", "Root Vegetables", "Other Vegetables"],
+    "Fruit": ["Bananas", "Apples", "Berries & Grapes"],
+    "Extra": ["Beet Sugar", "Coffee", "Dark Chocolate"]
 }
 
 kcalDict = {

@@ -1,4 +1,4 @@
-# import nutritionfacts
+import nutritionfacts
 
 # ______________________________________________________________________________
 # Fonction :
@@ -10,6 +10,15 @@ def mealEnvimpact(meal: list, listOfDico: list, listQuantity) -> list:
         for i in range(len(listOfDico)):
             totalList[i] += listQuantity[j] * listOfDico[i][meal[j]]
     return [i/1000 for i in totalList]
+
+
+def mealListEnvimpact(listMeal: list, envDict: dict, envTypeList: list) -> list:
+    dictList = [envDict[i] for i in envTypeList]
+    listMeal_Envimpact = []
+    for meal in listMeal:
+        listMeal_Envimpact.append(
+            (meal, mealEnvimpact(meal[0], dictList, meal[1])))
+    return listMeal_Envimpact
 
 
 def printEnvimpact(listEnvimpact: list) -> None:

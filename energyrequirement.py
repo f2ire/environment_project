@@ -1,3 +1,4 @@
+from tkinter import W
 import tools
 # ______________________________________________________________________________
 # Fonction :
@@ -14,11 +15,18 @@ def basalMetabolicRate(gender: str, weight: float,
                     (male or female work)
                 weight (float) : Your weight in Kg
                 height (float) : Your height in Cm
-                age (int) : Your age in year
+                age (int) : Your age in year (you have to have more than 18 yo)
         Return :
                 met_rate (int) : The metabolic rate calculted with\
                     the informations given
     """
+    if age < 18:
+        raise ValueError(
+            'This program is currently designed for adult food requirements, sorry.')
+    if weight < 0:
+        raise ValueError('Body weight should be a positive number.')
+    if height < 0:
+        raise ValueError('Height should be a positive integer.')
     if gender.lower() in ["M", "male"]:
         met_rate = 10*weight+6.25*height-5*age+5
     else:
@@ -48,8 +56,8 @@ def dailyEnergyRequirement(gender: str, weight: float,
     """
     activity_lvl = {"sedementary": 1.4, "light": 1.6,
                     "moderate": 1.75, "intense": 1.9, "very intense": 2.1}
-    return activity_lvl[physical_activity_lvl] *\
-        basalMetabolicRate(gender, weight, height, age)
+    return activity_lvl[physical_activity_lvl] * basalMetabolicRate(
+        gender, weight, height, age)
 
 
 def askStatUser() -> list:

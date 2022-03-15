@@ -7,6 +7,20 @@ import numpy as np
 # Fonction :
 
 
+def loadNutriData(dataPath: str) -> dict:
+    df_nutritions = pandas.read_excel(
+        dataPath, 0, 0, index_col=0)
+    dict_nutritions = df_nutritions.to_dict("series")
+    return dict_nutritions
+
+
+def dictByType(dictNutrition: dict, columnsName: list) -> dict:
+    NutriDict = {}
+    for name in columnsName:
+        NutriDict[name] = dictNutrition[name]
+    return NutriDict
+
+
 def computeQuantity(targetCal: int, meal: list, extraDict: dict,
                     proteinDict: dict, fatDict: dict,
                     carbohydrateDict: dict) -> list:
@@ -63,11 +77,13 @@ def dictByProduct_toDictByType(mealDf: dict) -> dict:
     return new_dict
 
 
-def generateMeal(mealDict: dict, extraDict: dict, targetCal: int,
-                 protDict: dict, fatDict: dict, carbonDict: dict) -> list:
+def generateMeal(mealDict: dict, extraDict: dict,
+                 targetCal: int, protDict: dict, fatDict: dict,
+                 carbonDict: dict, isUnitTest: bool) -> list:
     """
     Generate a list of possible meal can be done with all meat given
     """
+    nbImpossible, nbPossible = 0, 0
     listOfPossibleMeal = []
     for meal in list(itertools.product(mealDict["ProteinSource"],
                                        mealDict["CarbSource"],
@@ -79,10 +95,18 @@ def generateMeal(mealDict: dict, extraDict: dict, targetCal: int,
             targetCal, meal, extraDict,
             protDict, fatDict, carbonDict)
         if qMeal is None:
-            pass
+            nbImpossible += 1
         else:
             listOfPossibleMeal.append((meal, qMeal))
+            nbPossible += 1
 
+    print(
+        f"There are {nbImpossible} impossible meal \n"
+        f"But there are {nbPossible} possible meal")
+    if isUnitTest:
+        print(
+            f"It is{'' if (nbImpossible + nbPossible)==72000 else 'not'}"
+            " the amount expected for unit test")
     return listOfPossibleMeal
 
 

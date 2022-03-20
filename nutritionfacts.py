@@ -163,7 +163,6 @@ def extraQuantity(mealDict: dict) -> dict:
         else:
             print(extraAnswerError)
     return dict_extraQuantity
-
 # ______________________________________________________________________________
 # Variable :
 

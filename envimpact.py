@@ -1,6 +1,8 @@
+from json import tool
 import matplotlib.pyplot as plt
 import nutritionfacts
 import pandas
+import tools
 
 # ______________________________________________________________________________
 # Fonction :
@@ -8,7 +10,7 @@ import pandas
 
 def loadEnvData(dataPath: str, envName: list, columnsToSelect: str, lineToDontSelect: list) -> dict:
     df_environment = pandas.read_excel(
-        "DataS2.xlsx", 0,
+        dataPath, 0,
         header=None, names=["products"] + envName,
         index_col=0, usecols=columnsToSelect,
         skiprows=lambda x: x in lineToDontSelect
@@ -24,7 +26,8 @@ def mealEnvimpact(meal: list, listOfDico: list, listQuantity) -> list:
     return [i for i in totalList]
 
 
-def mealListEnvimpact(listMeal: list, envDict: dict, envTypeList: list) -> list:
+def mealListEnvimpact(listMeal: list, envDict: dict,
+                      envTypeList: list) -> list:
     dictList = [envDict[i] for i in envTypeList]
     listMeal_Envimpact = []
     for meal in listMeal:
@@ -56,30 +59,38 @@ def thresholdsEnvimpact(listMeal: list, isUnitTest: bool) -> list:
                 "acidifying emissions",
                 "entrophying emissions",
                 "freshwater used"]
+    units = ["m2/FU", "kg CO2eq/FU", "g SO2eq/FU", "g PO43-eq/FU", "L/FU"]
     # Check if unittest
-    printHistEnv(listMeal, unitList)
+    printHistEnv(listMeal, unitList, units)
     if not isUnitTest:
         thresholdsList = [1, 1, 5, 5, 1000]
     else:
-        thresholdsList = [input(f"What is the limite of {name} : ")
+        thresholdsList = [tools.floatInput(f"What is the limite of {name} : ,",
+                                           "Please write a float")
                           for name in unitList]
+    return thresholdsList
+
+
+def computeValidEnvMeal(listMeal: list, thresholdsList: list) -> list:
     goodMeal = []
+    nbImpossible = 0
     for meal in listMeal:
         i = 0
         noEnv = False
-        nbImpossible = 0
-        while i < len(meal[1]) or noEnv:
+        while i < (len(meal[1])-1) and not noEnv:
             if meal[1][i] > thresholdsList[i]:
                 noEnv = True
                 nbImpossible += 1
                 i += 1
-            i += 1
+            else:
+                i += 1
         if not noEnv:
             goodMeal.append(meal)
     print(
         f"There are {nbImpossible} more impossible meal \n"
         f"But there now {len(listMeal)-nbImpossible} possible meal")
     return goodMeal
+
     # template = f'{"-":-^105}\n'
     # for i in range(len(listEnvimpact)):
     #     isEnvGood.append(listEnvimpact[i] >= thresholdsList[i])
@@ -91,7 +102,7 @@ def thresholdsEnvimpact(listMeal: list, isUnitTest: bool) -> list:
     # print(template)
 
 
-def printHistEnv(listMeal: list, unit: list) -> None:
+def printHistEnv(listMeal: list, unit: list, unitOfUnit: list) -> None:
     dictEnv = {}
     for name in unit:
         dictEnv[name] = []
@@ -102,6 +113,10 @@ def printHistEnv(listMeal: list, unit: list) -> None:
     for i in range(5):
         plt.subplot(3, 2, i+1)
         plt.hist(dictEnv[unit[i]])
+        plt.title(unit[i])
+        plt.ylabel("Number of Meal")
+        plt.xlabel(unitOfUnit[i])
+    plt.tight_layout()
     plt.show()
 
 

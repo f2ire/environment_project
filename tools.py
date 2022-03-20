@@ -6,30 +6,30 @@ def comaIntoDot(iteration: int, max_iteration: int) -> str:
 
 
 def intInput(textToAsk: str, textToError: str) -> int:
-    try:
-        value = int(input(textToAsk))
-    except ValueError:
-        print(textToError)
-        value = intInput(textToAsk, textToError)
-    return value
+    while True:
+        try:
+            value = int(input(textToAsk))
+            return value
+        except ValueError:
+            print(textToError)
 
 
 def floatInput(textToAsk: str, textToError: str) -> float:
-    try:
-        value = float(input(textToAsk))
-    except ValueError:
-        print(textToError)
-        value = floatInput(textToAsk, textToError)
-    return value
+    while True:
+        try:
+            value = float(input(textToAsk))
+            return value
+        except ValueError:
+            print(textToError)
 
 
 def strInput(textToAsk: str, textToError: str) -> str:
-    try:
-        value = input(textToAsk)
-    except ValueError:
-        print(textToError)
-        value = strInput(textToAsk, textToError)
-    return value
+    while True:
+        try:
+            value = input(textToAsk)
+            return value
+        except ValueError:
+            print(textToError)
 
 
 def floatUnitTest(a: float, b: float, delta=10**-6) -> bool:

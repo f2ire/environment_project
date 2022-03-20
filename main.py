@@ -1,8 +1,8 @@
-import unittest
 import envimpact
 import energyrequirement
 import nutritionfacts
 import matplotlib as plt
+import logger
 
 if __name__ == "__main__":
 
@@ -33,11 +33,12 @@ if __name__ == "__main__":
         statUser = energyrequirement.askStatUser()
         targetCal = energyrequirement.dailyEnergyRequirement(
             statUser[0], statUser[1], statUser[2], statUser[3], statUser[4])
+        print(f"Your needs are {targetCal} kCal")
         extraDict = nutritionfacts.extraQuantity(mealDict)
 
     else:
-        statUser = ["M", 20, 70, 170, "light"]
-        targetCal = 1800
+        # statUser = ["M", 20, 70, 170, "light"]
+        targetCal = 2668
         extraDict = {"Barley (Beer)": 0.25, "Cane Sugar": 0.012,
                      "Beet Sugar": 0.012, "Wine": 0.1,
                      "Coffee": 0.008, "Dark Chocolate": 0.02}
@@ -52,7 +53,10 @@ if __name__ == "__main__":
     listOf_MealQuantity_Env = envimpact.mealListEnvimpact(
         mealAndQuantity, dict_environment, envName)
 
-    test = listOf_MealQuantity_Env[0]
-    print(isNotUnitTest)
-    a = envimpact.thresholdsEnvimpact(listOf_MealQuantity_Env, isNotUnitTest)
-    print(a)
+    thresholdValues = envimpact.thresholdsEnvimpact(
+        listOf_MealQuantity_Env, isNotUnitTest)
+    goodMealList = envimpact.computeValidEnvMeal(
+        listOf_MealQuantity_Env, thresholdValues)
+    print(goodMealList[0])
+    log = logger.Logger(goodMealList)
+    log.saveMealList("meal.txt")

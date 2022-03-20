@@ -3,8 +3,8 @@ import tools
 # Fonction :
 
 
-def basalMetabolicRate(gender: str, weight: float,
-                       height: float, age: int) -> float:
+def basalMetabolicRate(gender: str, age: int, weight: float,
+                       height: float) -> float:
     """ # Voir son docstring  sur moodle ou jcp pas ou avec tout ce qu'elle demande
     Return the metabolic rate of a person according to Mifflin St Jeor's\
         equation
@@ -26,10 +26,10 @@ def basalMetabolicRate(gender: str, weight: float,
         raise ValueError('Body weight should be a positive number.')
     if height < 0:
         raise ValueError('Height should be a positive integer.')
-    if gender.lower() in ["M", "male"]:
-        met_rate = 10*weight+6.25*height-5*age+5
+    if gender.lower() in ["m", "male"]:
+        met_rate = 10*weight+6.25*height-(5*age)+5
     else:
-        met_rate = 10*weight+6.25*height-5*age-161
+        met_rate = 10*weight+6.25*height-(5*age)-161
     return met_rate
 
 

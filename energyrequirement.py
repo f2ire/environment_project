@@ -1,10 +1,12 @@
 import tools
+
 # ______________________________________________________________________________
 # Fonction :
 
 
-def basalMetabolicRate(gender: str, age: int, weight: float,
-                       height: float) -> float:
+def basalMetabolicRate(
+    gender: str, age: int, weight: float, height: float
+) -> float:
     """ # Voir son docstring  sur moodle ou jcp pas ou avec tout ce qu'elle demande
     Return the metabolic rate of a person according to Mifflin St Jeor's\
         equation
@@ -21,21 +23,26 @@ def basalMetabolicRate(gender: str, age: int, weight: float,
     """
     if age < 18:
         raise ValueError(
-            'This program is currently designed for adult food requirements, sorry.')
+            "This program is currently designed for adult food requirements."
+        )
     if weight < 0:
-        raise ValueError('Body weight should be a positive number.')
+        raise ValueError("Body weight should be a positive number.")
     if height < 0:
-        raise ValueError('Height should be a positive integer.')
+        raise ValueError("Height should be a positive integer.")
     if gender.lower() in ["m", "male"]:
-        met_rate = 10*weight+6.25*height-(5*age)+5
+        met_rate = 10 * weight + 6.25 * height - (5 * age) + 5
     else:
-        met_rate = 10*weight+6.25*height-(5*age)-161
+        met_rate = 10 * weight + 6.25 * height - (5 * age) - 161
     return met_rate
 
 
-def dailyEnergyRequirement(gender: str, weight: float,
-                           height: float, age: int,
-                           physical_activity_lvl: str):
+def dailyEnergyRequirement(
+    gender: str,
+    weight: float,
+    height: float,
+    age: int,
+    physical_activity_lvl: str,
+):
     """
     Return the daily energy requirement of a person according to Mifflin St \
         Jeor's equation and his physical activity level
@@ -53,16 +60,27 @@ def dailyEnergyRequirement(gender: str, weight: float,
                 Value (int) : The daily energy requirement calculted with the\
                     informations given
     """
-    activity_lvl = {"sedementary": 1.4, "light": 1.6,
-                    "moderate": 1.75, "intense": 1.9, "very intense": 2.1}
+    activity_lvl = {
+        "sedementary": 1.4,
+        "light": 1.6,
+        "moderate": 1.75,
+        "intense": 1.9,
+        "very intense": 2.1,
+    }
     return activity_lvl[physical_activity_lvl] * basalMetabolicRate(
-        gender, weight, height, age)
+        gender, weight, height, age
+    )
 
 
 def askStatUser() -> list:
     userStats = []
-    activityLvl = ["sedementary", "light",
-                   "moderate", "intense", "very intense"]
+    activityLvl = [
+        "sedementary",
+        "light",
+        "moderate",
+        "intense",
+        "very intense",
+    ]
     textToPrint = [
         "Select your gender (M/F) : \n",
         "Precise your age in years : \n",
@@ -73,7 +91,7 @@ def askStatUser() -> list:
         f"Press 2 for {activityLvl[1]}\n"
         f"Press 3 for {activityLvl[2]}\n"
         f"Press 4 for {activityLvl[3]}\n"
-        f"Press 5 for {activityLvl[4]}\nPress : "
+        f"Press 5 for {activityLvl[4]}\nPress : ",
     ]
     it = 0
     while it < len(textToPrint):
@@ -99,7 +117,8 @@ def askStatUser() -> list:
         else:
             activityAnswerError = "Please press a int between 1 and 5"
             index_activityLvl = tools.intInput(
-                textToPrint[it], activityAnswerError)
+                textToPrint[it], activityAnswerError
+            )
             if index_activityLvl < 0 or index_activityLvl > 5:
                 print(activityAnswerError)
             else:
@@ -107,6 +126,7 @@ def askStatUser() -> list:
                 it += 1
 
     return userStats
+
 
 # ______________________________________________________________________________
 # Variable :
@@ -116,5 +136,8 @@ def askStatUser() -> list:
 
 
 if __name__ == "__main__":
-    print(tools.floatUnitTest(dailyEnergyRequirement("male", 59, 175,
-                                                     20, "light"), 2552))
+    print(
+        tools.floatUnitTest(
+            dailyEnergyRequirement("male", 59, 175, 20, "light"), 2552
+        )
+    )

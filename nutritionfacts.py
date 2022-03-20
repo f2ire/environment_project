@@ -8,8 +8,7 @@ import numpy as np
 
 
 def loadNutriData(dataPath: str) -> dict:
-    df_nutritions = pandas.read_excel(
-        dataPath, 0, 0, index_col=0)
+    df_nutritions = pandas.read_excel(dataPath, 0, 0, index_col=0)
     dict_nutritions = df_nutritions.to_dict("series")
     return dict_nutritions
 
@@ -21,9 +20,14 @@ def dictByType(dictNutrition: dict, columnsName: list) -> dict:
     return NutriDict
 
 
-def computeQuantity(targetCal: int, meal: list, extraDict: dict,
-                    proteinDict: dict, fatDict: dict,
-                    carbohydrateDict: dict) -> list:
+def computeQuantity(
+    targetCal: int,
+    meal: list,
+    extraDict: dict,
+    proteinDict: dict,
+    fatDict: dict,
+    carbohydrateDict: dict,
+) -> list:
     """
     Compute the quantity of g needed for the meal for each component
     and return a list [qProtSource, qCarbSource, qFatSource, qVegetable,"\
@@ -33,38 +37,46 @@ def computeQuantity(targetCal: int, meal: list, extraDict: dict,
     qFruit = 0.05
     # 0 : prot, 1 carb, 2 : fat, 3 : vegetable, 4 : fruit, 5 : extras
     # b = [prot, carb, fat]
-    const = np.array([
-        (0.12*targetCal/4) -
-        qVeg * proteinDict[meal[3]] -
-        qFruit * proteinDict[meal[4]] -
-        proteinDict[meal[5]] * extraDict[meal[5]],
-
-        (0.66*targetCal/4) -
-        qVeg * carbohydrateDict[meal[3]] -
-        qFruit * carbohydrateDict[meal[4]] -
-        carbohydrateDict[meal[5]] * extraDict[meal[5]],
-
-        (0.22*targetCal/8.8) -
-        qVeg * fatDict[meal[3]] -
-        qFruit * fatDict[meal[4]] -
-        fatDict[meal[5]]*extraDict[meal[5]]]
+    const = np.array(
+        [
+            (0.12 * targetCal / 4)
+            - qVeg * proteinDict[meal[3]]
+            - qFruit * proteinDict[meal[4]]
+            - proteinDict[meal[5]] * extraDict[meal[5]],
+            (0.66 * targetCal / 4)
+            - qVeg * carbohydrateDict[meal[3]]
+            - qFruit * carbohydrateDict[meal[4]]
+            - carbohydrateDict[meal[5]] * extraDict[meal[5]],
+            (0.22 * targetCal / 8.8)
+            - qVeg * fatDict[meal[3]]
+            - qFruit * fatDict[meal[4]]
+            - fatDict[meal[5]] * extraDict[meal[5]],
+        ]
     )
-    coef = np.array([[proteinDict[meal[0]],
-                      proteinDict[meal[1]],
-                      proteinDict[meal[2]]],
-                     [carbohydrateDict[meal[0]],
-                      carbohydrateDict[meal[1]],
-                      carbohydrateDict[meal[2]]],
-                     [fatDict[meal[0]],
-                      fatDict[meal[1]],
-                      fatDict[meal[2]]]])
+    coef = np.array(
+        [
+            [proteinDict[meal[0]], proteinDict[meal[1]], proteinDict[meal[2]]],
+            [
+                carbohydrateDict[meal[0]],
+                carbohydrateDict[meal[1]],
+                carbohydrateDict[meal[2]],
+            ],
+            [fatDict[meal[0]], fatDict[meal[1]], fatDict[meal[2]]],
+        ]
+    )
 
     qValues = np.linalg.solve(coef, const)
     for elem in qValues:  # Test of no null values
         if elem < 0:
             return None
-    return [qValues[0], qValues[1], qValues[2],
-            qVeg, qFruit, extraDict[meal[5]]]
+    return [
+        qValues[0],
+        qValues[1],
+        qValues[2],
+        qVeg,
+        qFruit,
+        extraDict[meal[5]],
+    ]
 
 
 def dictByProduct_toDictByType(mealDf: dict) -> dict:
@@ -77,23 +89,32 @@ def dictByProduct_toDictByType(mealDf: dict) -> dict:
     return new_dict
 
 
-def generateMeal(mealDict: dict, extraDict: dict,
-                 targetCal: int, protDict: dict, fatDict: dict,
-                 carbonDict: dict, isUnitTest: bool) -> list:
+def generateMeal(
+    mealDict: dict,
+    extraDict: dict,
+    targetCal: int,
+    protDict: dict,
+    fatDict: dict,
+    carbonDict: dict,
+) -> list:
     """
     Generate a list of possible meal can be done with all meat given
     """
     nbImpossible, nbPossible = 0, 0
     listOfPossibleMeal = []
-    for meal in list(itertools.product(mealDict["ProteinSource"],
-                                       mealDict["CarbSource"],
-                                       mealDict["FatSource"],
-                                       mealDict["Vegetable"],
-                                       mealDict["Fruit"],
-                                       mealDict["Extra"])):
+    for meal in list(
+        itertools.product(
+            mealDict["ProteinSource"],
+            mealDict["CarbSource"],
+            mealDict["FatSource"],
+            mealDict["Vegetable"],
+            mealDict["Fruit"],
+            mealDict["Extra"],
+        )
+    ):
         qMeal = computeQuantity(
-            targetCal, meal, extraDict,
-            protDict, fatDict, carbonDict)
+            targetCal, meal, extraDict, protDict, fatDict, carbonDict
+        )
         if qMeal is None:
             nbImpossible += 1
         else:
@@ -102,11 +123,11 @@ def generateMeal(mealDict: dict, extraDict: dict,
 
     print(
         f"There are {nbImpossible} impossible meal \n"
-        f"But there are {nbPossible} possible meal")
-    if isUnitTest:
-        print(
-            f"It is{'' if (nbImpossible + nbPossible)==72000 else 'not'}"
-            " the amount expected for unit test")
+        f"But there are {nbPossible} possible meal"
+    )
+    # print(
+    #     f"It is{'' if (nbImpossible + nbPossible)==72000 else 'not'}"
+    #     " the amount expected for unit test")
     return listOfPossibleMeal
 
 
@@ -125,15 +146,15 @@ def mealComposition(meal: list, listQuantity: list, listOfDict: list) -> None:
     Print the composition of the meal given
     """
     unity = ["kcal", "g protein", "g carb", "g fat"]
-    total = [0]*len(unity)
+    total = [0] * len(unity)
     template = f'The meal is composed of : \n {"-":-^105}\n'
     for i in range(len(meal)):
         template += f'-   {listQuantity[i]}g of {meal[i]: >25},\
             contributing {"": ^5}'
 
         for j in range(len(listOfDict)):
-            values = (listOfDict[j][meal[i]] * listQuantity[i])/1000
-            template += f'{values: >5.1f} {unity[j]}'
+            values = (listOfDict[j][meal[i]] * listQuantity[i]) / 1000
+            template += f"{values: >5.1f} {unity[j]}"
             total[j] += values
             template += tools.comaIntoDot(j, len(listOfDict))
         template += "\n"
@@ -143,7 +164,7 @@ def mealComposition(meal: list, listQuantity: list, listOfDict: list) -> None:
     for i in range(len(unity)):
         template += f"{total[i]:.1f} {unity[i]}"
         template += tools.comaIntoDot(i, len(listOfDict))
-    print(template+"\n")
+    print(template + "\n")
 
 
 def extraQuantity(mealDict: dict) -> dict:
@@ -154,8 +175,12 @@ def extraQuantity(mealDict: dict) -> dict:
     extraSource = mealDict["Extra"]
     it = 0
     while it < len(extraSource):
-        extraQuestion = f"How much extra kg of {extraSource[it]} do you need ? \n"
-        extraAnswerError = "\nERROR :\n\nYou have to write a number superior of 0.\n"
+        extraQuestion = (
+            f"How much extra kg of {extraSource[it]} do you need ? \n"
+        )
+        extraAnswerError = (
+            "\nERROR :\n\nYou have to write a number superior of 0.\n"
+        )
         i_Extra = tools.floatInput(extraQuestion, extraAnswerError)
         if i_Extra >= 0:
             dict_extraQuantity[extraSource[it]] = i_Extra
@@ -163,18 +188,24 @@ def extraQuantity(mealDict: dict) -> dict:
         else:
             print(extraAnswerError)
     return dict_extraQuantity
+
+
 # ______________________________________________________________________________
 # Variable :
 
 
 mealDict = {
-    "ProteinSource": ["Tofu", "Bovine Meat (beef herd)",
-                      "Poultry Meat", "Eggs"],
+    "ProteinSource": [
+        "Tofu",
+        "Bovine Meat (beef herd)",
+        "Poultry Meat",
+        "Eggs",
+    ],
     "CarbSource": ["Wheat & Rye(Bread)", "Maize (meal)", "Potatoes"],
     "FatSource": ["Rapeseed Oil", "Olive Oil"],
     "Vegetable": ["Tomatoes", "Root Vegetables", "Other Vegetables"],
     "Fruit": ["Bananas", "Apples", "Berries & Grapes"],
-    "Extra": ["Beet Sugar", "Coffee", "Dark Chocolate"]
+    "Extra": ["Beet Sugar", "Coffee", "Dark Chocolate"],
 }
 
 kcalDict = {
@@ -195,7 +226,7 @@ kcalDict = {
     "Eggs": 1630,
     "Tomatoes": 170,
     "Root Vegetables": 380,
-    "Other Vegetables": 220
+    "Other Vegetables": 220,
 }
 proteinDict = {
     "Wheat & Rye(Bread)": 82,
@@ -215,7 +246,7 @@ proteinDict = {
     "Eggs": 113,
     "Tomatoes": 8,
     "Root Vegetables": 9,
-    "Other Vegetables": 14
+    "Other Vegetables": 14,
 }
 fatDict = {
     "Wheat & Rye(Bread)": 12,
@@ -235,7 +266,7 @@ fatDict = {
     "Eggs": 121,
     "Tomatoes": 2,
     "Root Vegetables": 2,
-    "Other Vegetables": 2
+    "Other Vegetables": 2,
 }
 carbohydrateDict = {
     "Wheat & Rye(Bread)": 514.1,
@@ -255,7 +286,7 @@ carbohydrateDict = {
     "Eggs": 28.3,
     "Tomatoes": 30.1,
     "Root Vegetables": 81.6,
-    "Other Vegetables": 36.6
+    "Other Vegetables": 36.6,
 }
 
 
@@ -264,7 +295,8 @@ carbohydrateDict = {
 if __name__ == "__main__":
     extra = extraQuantity(mealDict)
     listOfPossibleMeal = generateMeal(
-        mealDict, extra, 1800, proteinDict, fatDict, carbohydrateDict)
+        mealDict, extra, 1800, proteinDict, fatDict, carbohydrateDict
+    )
     print(listOfPossibleMeal)
 
     # print(unitMealTest(mealDict, listOfPossibleMeal))

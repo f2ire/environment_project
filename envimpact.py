@@ -1,73 +1,93 @@
-from json import tool
 import matplotlib.pyplot as plt
-import nutritionfacts
 import pandas
 import tools
+from fileHandler import FileHandler
+import os
 
 # ______________________________________________________________________________
 # Fonction :
 
 
-def loadEnvData(dataPath: str, envName: list, columnsToSelect: str, lineToDontSelect: list) -> dict:
+def loadEnvData(
+    dataPath: str, envName: list, columnsToSelect: str, lineToDontSelect: list
+) -> dict:
     df_environment = pandas.read_excel(
-        dataPath, 0,
-        header=None, names=["products"] + envName,
-        index_col=0, usecols=columnsToSelect,
-        skiprows=lambda x: x in lineToDontSelect
+        dataPath,
+        0,
+        header=None,
+        names=["products"] + envName,
+        index_col=0,
+        usecols=columnsToSelect,
+        skiprows=lambda x: x in lineToDontSelect,
     )
     return df_environment.to_dict("series")
 
 
 def mealEnvimpact(meal: list, listOfDico: list, listQuantity) -> list:
-    totalList = [0]*len(listOfDico)
+    totalList = [0] * len(listOfDico)
     for j in range(len(meal)):
         for i in range(len(listOfDico)):
             totalList[i] += listQuantity[j] * listOfDico[i][meal[j]]
     return [i for i in totalList]
 
 
-def mealListEnvimpact(listMeal: list, envDict: dict,
-                      envTypeList: list) -> list:
+def mealListEnvimpact(
+    listMeal: list, envDict: dict, envTypeList: list
+) -> list:
     dictList = [envDict[i] for i in envTypeList]
     listMeal_Envimpact = []
     for meal in listMeal:
         listMeal_Envimpact.append(
-            (meal, mealEnvimpact(meal[0], dictList, meal[1])))
+            (meal, mealEnvimpact(meal[0], dictList, meal[1]))
+        )
     return listMeal_Envimpact
 
 
 def printEnvimpact(listEnvimpact: list) -> None:
-    unitList = ["square meters of land.",
-                "kg CO2 eq. (greenhouse gas emissions).",
-                "g SO2 eq. (acidifying emissions).",
-                "g PO43- eq. (entrophying emissions). ",
-                "L of freshwater"]
+    unitList = [
+        "square meters of land.",
+        "kg CO2 eq. (greenhouse gas emissions).",
+        "g SO2 eq. (acidifying emissions).",
+        "g PO43- eq. (entrophying emissions). ",
+        "L of freshwater",
+    ]
     template = f'{"#":#^50}\n# Environmental impact #\n {"#":#^50}\n'
     for i in range(len(unitList)):
         if i in (0, 4):
-            template += 'This meal uses\t'
+            template += "This meal uses\t"
         else:
-            template += 'This meal emits\t'
-        template += f'{listEnvimpact[i]:.1f} {unitList[i]}\n'
+            template += "This meal emits\t"
+        template += f"{listEnvimpact[i]:.1f} {unitList[i]}\n"
     print(template)
 
 
-def thresholdsEnvimpact(listMeal: list, isUnitTest: bool) -> list:
+def thresholdsEnvimpact(listMeal: list) -> list:
     # _______ Init var _________
-    unitList = ["meters of land",
-                "greenhouse gas emissions",
-                "acidifying emissions",
-                "entrophying emissions",
-                "freshwater used"]
+    unitList = [
+        "meters of land",
+        "greenhouse gas emissions",
+        "acidifying emissions",
+        "entrophying emissions",
+        "freshwater used",
+    ]
     units = ["m2/FU", "kg CO2eq/FU", "g SO2eq/FU", "g PO43-eq/FU", "L/FU"]
     # Check if unittest
     printHistEnv(listMeal, unitList, units)
-    if not isUnitTest:
-        thresholdsList = [1, 1, 5, 5, 1000]
+
+    if (
+        os.path.exists("thresholdsList.json")
+        and input("Do you want to select previous thresholds data ? (y/n) : ")
+        == "y".lower()
+    ):
+        thresholdsList = FileHandler.loadList("thresholdsList.json")
     else:
-        thresholdsList = [tools.floatInput(f"What is the limite of {name} : ,",
-                                           "Please write a float")
-                          for name in unitList]
+        thresholdsList = [
+            tools.floatInput(
+                f"What is the limite of {name} : ", "Please write a float"
+            )
+            for name in unitList
+        ]
+        FileHandler.saveData("thresholdsList.json", thresholdsList)
     return thresholdsList
 
 
@@ -77,7 +97,7 @@ def computeValidEnvMeal(listMeal: list, thresholdsList: list) -> list:
     for meal in listMeal:
         i = 0
         noEnv = False
-        while i < (len(meal[1])-1) and not noEnv:
+        while i < (len(meal[1]) - 1) and not noEnv:
             if meal[1][i] > thresholdsList[i]:
                 noEnv = True
                 nbImpossible += 1
@@ -88,7 +108,8 @@ def computeValidEnvMeal(listMeal: list, thresholdsList: list) -> list:
             goodMeal.append(meal)
     print(
         f"There are {nbImpossible} more impossible meal \n"
-        f"But there now {len(listMeal)-nbImpossible} possible meal")
+        f"But there now {len(listMeal)-nbImpossible} possible meal"
+    )
     return goodMeal
 
     # template = f'{"-":-^105}\n'
@@ -111,7 +132,7 @@ def printHistEnv(listMeal: list, unit: list, unitOfUnit: list) -> None:
         for i in range(len(meal[1])):
             dictEnv[unit[i]].append(meal[1][i])
     for i in range(5):
-        plt.subplot(3, 2, i+1)
+        plt.subplot(3, 2, i + 1)
         plt.hist(dictEnv[unit[i]])
         plt.title(unit[i])
         plt.ylabel("Number of Meal")
@@ -142,7 +163,7 @@ if __name__ == "__main__":
         "Dark Chocolate": 53.8,
         "Bovine Meat (beef herd)": 170.4,
         "Poultry Meat": 11.0,
-        "Eggs": 5.7
+        "Eggs": 5.7,
     }
     ghgEmDict = {
         "Wheat & Rye(Bread)": 1.3,
@@ -162,7 +183,7 @@ if __name__ == "__main__":
         "Dark Chocolate": 5.0,
         "Bovine Meat (beef herd)": 60.4,
         "Poultry Meat": 7.5,
-        "Eggs": 4.2
+        "Eggs": 4.2,
     }
     acidEmDict = {
         "Wheat & Rye(Bread)": 13.3,
@@ -182,7 +203,7 @@ if __name__ == "__main__":
         "Dark Chocolate": 29.0,
         "Bovine Meat (beef herd)": 270.9,
         "Poultry Meat": 64.7,
-        "Eggs": 54.2
+        "Eggs": 54.2,
     }
     eutEmDict = {
         "Wheat & Rye(Bread)": 5.4,
@@ -202,7 +223,7 @@ if __name__ == "__main__":
         "Dark Chocolate": 67.3,
         "Bovine Meat (beef herd)": 320.7,
         "Poultry Meat": 34.5,
-        "Eggs": 21.3
+        "Eggs": 21.3,
     }
     waterDict = {
         "Wheat & Rye(Bread)": 12822,
@@ -222,12 +243,11 @@ if __name__ == "__main__":
         "Dark Chocolate": 220,
         "Bovine Meat (beef herd)": 441,
         "Poultry Meat": 334,
-        "Eggs": 18621
+        "Eggs": 18621,
     }
 
-
-# ______________________________________________________________________________
-# Main program :
+    # ______________________________________________________________________________
+    # Main program :
 
     # listOfDico = [landDict, ghgEmDict, acidEmDict, eutEmDict, waterDict]
     # listOfEnvimpact = mealEnvimpact(

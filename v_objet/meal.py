@@ -7,13 +7,13 @@ class Meal:
     ):
         self.productList = [prot, carb, fat, vege, fruit, extra]
         self.productQuantity = []
-        self.Environmental5D = []
+        self.environmental5D = []
 
     def __repr__(self) -> str:
         return (
             f"{self.productList} : liste des produits"
             + f"{self.productQuantity} : liste des quantité"
-            + f"{self.Environmental5D} : list Env5D"
+            + f"{self.environmental5D} : list Env5D"
         )
 
     def computeQuantity(self, user, dictByRU):

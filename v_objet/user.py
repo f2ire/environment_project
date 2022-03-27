@@ -31,6 +31,7 @@ class User:
         self.metabobicRate = None
         self.dailyEnergyRequirement = None
         self.dictExtraQuantity = {}
+        self.threshold = []
 
     def __repr__(self) -> str:
         return f"User dict : {str(self.userDict)},\n\
@@ -150,6 +151,26 @@ class User:
                 it += 1
             else:
                 print(extraAnswerError)
+
+    # def thresholdsEnvimpact(listMeal: list) -> list:
+
+    #     printHistEnv(listMeal, unitList, units)
+
+    #     if (
+    #         os.path.exists("thresholdsList.json")
+    #         and input("Do you want to select previous thresholds data ? (y/n) : ")
+    #         == "y".lower()
+    #     ):
+    #         thresholdsList = FileHandler.loadList("thresholdsList.json")
+    #     else:
+    #         thresholdsList = [
+    #             tools.floatInput(
+    #                 f"What is the limite of {name} : ", "Please write a float"
+    #             )
+    #             for name in unitList
+    #         ]
+    #         FileHandler.saveData("thresholdsList.json", thresholdsList)
+    #     return thresholdsList
 
 
 # Main program

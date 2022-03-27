@@ -11,13 +11,13 @@ class EnvironmentalDatabase:
         "stressWeightedWaterUse ",
     ]
 
+    envUnit = ["m2/FU", "kg CO2eq/FU", "g SO2eq/FU", "g PO43-eq/FU", "L/FU"]
     colomnsSelected = "A,E,K,W,AC,AO"
-
     rowSelected = [0, 1, 2, 46, 47, 48, 49]
 
     def __init__(self, path: str):
         self.path: str = path
-        envDict = self.loadEnvData()
+        self.envDict = self.loadEnvData()
 
     def loadEnvData(self) -> dict:
         df_environment = pandas.read_excel(
@@ -29,4 +29,4 @@ class EnvironmentalDatabase:
             usecols=self.colomnsSelected,
             skiprows=lambda x: x in self.rowSelected,
         )
-        self.envDict = df_environment.to_dict("series")
+        return df_environment.to_dict("series")

@@ -4,6 +4,7 @@ from nutrition_database import NutritionDataBase
 from enivornmental_database import EnvironmentalDatabase
 from environmental_impact import EnvironmentalImpact
 from user import User
+import matplotlib.pyplot as plt
 
 
 class MealSet:
@@ -35,14 +36,31 @@ class MealSet:
             initMeal.computeQuantity(yo, self.dataNutrimentByRU)
             if initMeal.productQuantity != []:
                 self.mealList.append(initMeal)
-                env = EnvironmentalImpact
-                env.compute5D(
+                initMeal.environmental5D = EnvironmentalImpact()
+                initMeal.environmental5D.compute5D(
                     initMeal,
                     self.dataEnvironmental,
                     EnvironmentalDatabase.envName,
                 )
-                initMeal.environmental5D = env
-            print(initMeal)
+
+    def printHistEnv(self, envData: EnvironmentalDatabase) -> None:
+        dictEnv = {}
+        for meal in self.mealList:
+            for ind, unit in enumerate(envData.envName):
+                if unit in dictEnv:
+                    dictEnv[envData.envName[ind]].append(
+                        meal.environmental5D.list5D[ind]
+                    )
+                else:
+                    dictEnv[unit] = []
+        for i in range(5):
+            plt.subplot(3, 2, i + 1)
+            plt.hist(dictEnv[envData.envName[i]])
+            plt.title(envData.envName[i])
+            plt.ylabel("Number of Meal")
+            plt.xlabel(envData.envName[i])
+        plt.tight_layout()
+        plt.show()
 
 
 if __name__ == "__main__":
@@ -57,3 +75,4 @@ if __name__ == "__main__":
     a = MealSet(b, c)
     yo.computeAllUserThing(a.dataNutrimentByProduct)
     a.computeMealList()
+    a.printHistEnv(c)

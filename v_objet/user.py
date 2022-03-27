@@ -38,6 +38,10 @@ class User:
             so daily energy requirement is {str(self.dailyEnergyRequirement)}"
 
     # Other methods
+    def computeAllUserThing(self, test1):
+        self.computeMetabolicRate()
+        self.computeDailyEnergyRequirement()
+        self.extraQuantity(test1)
 
     def askStatUser(self):
         activityLvl = [
@@ -130,8 +134,8 @@ class User:
             )
             self.dailyEnergyRequirement = DER
 
-    def extraQuantity(self, extraDict: dict):
-        extraSource = extraDict["Extra"]
+    def extraQuantity(self, nutriDict: dict):
+        extraSource = nutriDict["Extra"]
         it = 0
         while it < len(extraSource):
             extraQuestion = (

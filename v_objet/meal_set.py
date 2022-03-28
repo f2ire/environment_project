@@ -65,8 +65,8 @@ class MealSet:
 
 if __name__ == "__main__":
     yo = User()
-    b = NutritionDataBase("v_objet/data/TableS1_augmented_with_FAO_data.xlsx")
-    c = EnvironmentalDatabase("v_objet/data/DataS2.xlsx")
+    b = NutritionDataBase("data/TableS1_augmented_with_FAO_data.xlsx")
+    c = EnvironmentalDatabase("data/DataS2.xlsx")
     print(c.envDict)
     b.loadNutriData()
     b.computeDictbyTypeOfProduct()
@@ -75,4 +75,4 @@ if __name__ == "__main__":
     a = MealSet(b, c)
     yo.computeAllUserThing(a.dataNutrimentByProduct)
     a.computeMealList()
-    a.printHistEnv(c)
+    yo.thresholdsEnvimpact(a, c)

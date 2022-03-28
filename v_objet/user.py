@@ -1,4 +1,6 @@
 from tools.good_input import GoodInput
+import os
+from fileHandler import FileHandler
 
 
 class User:
@@ -152,25 +154,27 @@ class User:
             else:
                 print(extraAnswerError)
 
-    # def thresholdsEnvimpact(listMeal: list) -> list:
+    def thresholdsEnvimpact(self, mealset, envData) -> list:
 
-    #     printHistEnv(listMeal, unitList, units)
+        mealset.printHistEnv(envData)
 
-    #     if (
-    #         os.path.exists("thresholdsList.json")
-    #         and input("Do you want to select previous thresholds data ? (y/n) : ")
-    #         == "y".lower()
-    #     ):
-    #         thresholdsList = FileHandler.loadList("thresholdsList.json")
-    #     else:
-    #         thresholdsList = [
-    #             tools.floatInput(
-    #                 f"What is the limite of {name} : ", "Please write a float"
-    #             )
-    #             for name in unitList
-    #         ]
-    #         FileHandler.saveData("thresholdsList.json", thresholdsList)
-    #     return thresholdsList
+        if (
+            os.path.exists("thresholdsList.json")
+            and input(
+                "Do you want to select previous thresholds data ? (y/n) : "
+            )
+            == "y".lower()
+        ):
+            thresholdsList = FileHandler.loadList("thresholdsList.json")
+        else:
+            thresholdsList = [
+                GoodInput.floatInput(
+                    f"What is the limite of {name} : ", "Please write a float"
+                )
+                for name in envData.envName
+            ]
+            FileHandler.saveData("thresholdsList.json", thresholdsList)
+        self.threshold = thresholdsList
 
 
 # Main program

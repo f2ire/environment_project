@@ -42,15 +42,16 @@ class MealSet:
                     self.dataEnvironmental,
                     EnvironmentalDatabase.envName,
                 )
+        if self.mealList == []:
+            exit("No meal avalaible")
 
     def printHistEnv(self, envData: EnvironmentalDatabase) -> None:
         dictEnv = {}
         for meal in self.mealList:
+            print("lol")
             for ind, unit in enumerate(envData.envName):
                 if unit in dictEnv:
-                    dictEnv[envData.envName[ind]].append(
-                        meal.environmental5D.list5D[ind]
-                    )
+                    dictEnv[unit].append(meal.environmental5D.list5D[ind])
                 else:
                     dictEnv[unit] = []
         for i in range(5):
@@ -64,7 +65,7 @@ class MealSet:
 
 
 if __name__ == "__main__":
-    yo = User()
+
     b = NutritionDataBase("data/TableS1_augmented_with_FAO_data.xlsx")
     c = EnvironmentalDatabase("data/DataS2.xlsx")
     print(c.envDict)
@@ -73,6 +74,8 @@ if __name__ == "__main__":
     b.computeDictByTypeOfRetailUnit()
 
     a = MealSet(b, c)
-    yo.computeAllUserThing(a.dataNutrimentByProduct)
+    yo = User.chooseUser("user_file", a.dataNutrimentByProduct, True)
+
+    yo.computeAllUserThing()
     a.computeMealList()
     yo.thresholdsEnvimpact(a, c)

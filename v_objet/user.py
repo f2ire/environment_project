@@ -1,3 +1,4 @@
+import pickle
 from tools.good_input import GoodInput
 import os
 from fileHandler import FileHandler
@@ -41,10 +42,9 @@ class User:
             so daily energy requirement is {str(self.dailyEnergyRequirement)}"
 
     # Other methods
-    def computeAllUserThing(self, test1):
+    def computeAllUserThing(self):
         self.computeMetabolicRate()
         self.computeDailyEnergyRequirement()
-        self.extraQuantity(test1)
 
     def askStatUser(self):
         activityLvl = [
@@ -175,6 +175,43 @@ class User:
             ]
             FileHandler.saveData("thresholdsList.json", thresholdsList)
         self.threshold = thresholdsList
+
+    @staticmethod
+    def chooseUser(filename, nutriDict, default=False):
+        if (
+            os.path.exists(filename)
+            and GoodInput.strInput(
+                "Do you want to select previous user data ? (y/n) : ",
+                "Please write y or n : ",
+            )
+            == "y".lower()
+        ):
+            with open(filename, "rb") as file:
+                loadUser = pickle.load(file)
+            if (
+                GoodInput.strInput(
+                    "Do you want to keep extra setting ? : ",
+                    "Please write y or n : ",
+                )
+                == "n".lower()
+            ):
+                loadUser.extraQuantity(nutriDict)
+            return loadUser
+        else:
+            newUser = User()
+            if not default:
+                newUser.askStatUser()
+            if (
+                GoodInput.strInput(
+                    "Do you want to keep extra setting ? : ",
+                    "Please write y or n : ",
+                )
+                == "n".lower()
+            ):
+                newUser.extraQuantity(nutriDict)
+            with open(filename, "wb") as file:
+                pickle.dump(newUser, file)
+            return newUser
 
 
 # Main program

@@ -1,4 +1,5 @@
 import json
+import pickle
 
 
 class FileHandler:
@@ -21,6 +22,11 @@ class FileHandler:
     def loadData(filename: str) -> list:
         with open(filename, "r") as file:
             return json.load(file)
+
+    @staticmethod
+    def saveUser(filename: str, user):
+        with open(filename, "wb") as file:
+            pickle.dump(user, file)
 
 
 if __name__ == "__main__":

@@ -158,14 +158,10 @@ class User:
 
         mealset.printHistEnv(envData)
 
-        if (
-            os.path.exists("thresholdsList.json")
-            and input(
-                "Do you want to select previous thresholds data ? (y/n) : "
-            )
-            == "y".lower()
+        if os.path.exists("thresholdsList.json") and GoodInput.isInputYes(
+            "Do you want to keep last thresholds"
         ):
-            thresholdsList = FileHandler.loadList("thresholdsList.json")
+            thresholdsList = FileHandler.loadData("thresholdsList.json")
         else:
             thresholdsList = [
                 GoodInput.floatInput(
@@ -178,36 +174,19 @@ class User:
 
     @staticmethod
     def chooseUser(filename, nutriDict, default=False):
-        if (
-            os.path.exists(filename)
-            and GoodInput.strInput(
-                "Do you want to select previous user data ? (y/n) : ",
-                "Please write y or n : ",
-            )
-            == "y".lower()
+        if os.path.exists(filename) and GoodInput.isInputYes(
+            "Do you want to select previous user data ?"
         ):
             with open(filename, "rb") as file:
                 loadUser = pickle.load(file)
-            if (
-                GoodInput.strInput(
-                    "Do you want to keep extra setting ? : ",
-                    "Please write y or n : ",
-                )
-                == "n".lower()
-            ):
+            if not GoodInput.isInputYes("Do you want to keep extra setting ?"):
                 loadUser.extraQuantity(nutriDict)
             return loadUser
         else:
             newUser = User()
             if not default:
                 newUser.askStatUser()
-            if (
-                GoodInput.strInput(
-                    "Do you want to keep extra setting ? : ",
-                    "Please write y or n : ",
-                )
-                == "n".lower()
-            ):
+            if GoodInput.isInputYes("Do you want to keep extra setting ?"):
                 newUser.extraQuantity(nutriDict)
             with open(filename, "wb") as file:
                 pickle.dump(newUser, file)
@@ -215,7 +194,8 @@ class User:
 
 
 # Main program
-mayo = User()
-mayo.computeMetabolicRate()
-mayo.computeDailyEnergyRequirement()
-print(mayo)
+if __name__ == "__main__":
+    mayo = User()
+    mayo.computeMetabolicRate()
+    mayo.computeDailyEnergyRequirement()
+    print(mayo)

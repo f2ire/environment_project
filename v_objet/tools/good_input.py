@@ -27,3 +27,18 @@ class GoodInput:
                 return value
             except ValueError:
                 print(textToError)
+
+    @staticmethod
+    def isInputYes(textToAsk: str):
+        textToError = "Thanks to press y for yes and n for no"
+        while True:
+            try:
+                value = input(f"{textToAsk} (y/n) : ")
+                if value.lower() == "y":
+                    return True
+                elif value.lower() == "n":
+                    return False
+                else:
+                    print(textToError)
+            except ValueError:
+                print(textToError)

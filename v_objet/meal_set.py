@@ -1,3 +1,4 @@
+from turtle import update
 from meal import Meal
 import itertools
 from nutrition_database import NutritionDataBase
@@ -16,12 +17,23 @@ class MealSet:
         self.dataNutrimentByProduct = dataNutriment.foodByTypeOfProduct
         self.dataNutrimentByRU = dataNutriment.foodByTypeOfRetailUnit
         self.dataEnvironmental = dataEnviron.envDict
-        self.mealList = []
+        self.mealList: list[Meal] = []
 
     def __repr__(self) -> str:
         return str(self.mealList)
 
-    def computeMealList(self) -> list:
+    def updateMealList(self, user: User):
+        for meal in self.mealList:
+            if meal.isPossible:
+                if meal.isImpactTooBig(user.threshold):
+                    # print("-1")
+                    self.mealList.remove(meal)
+            else:
+                # print("-&")
+                self.mealList.remove(meal)
+            print("zezqd")
+
+    def computeMealList(self, targetCal, extraDict) -> list:
         for meal in list(
             itertools.product(
                 self.dataNutrimentByProduct["ProteinSource"],
@@ -33,11 +45,12 @@ class MealSet:
             )
         ):
             initMeal = Meal(*meal)
-            initMeal.computeQuantity(yo, self.dataNutrimentByRU)
-            if initMeal.productQuantity != []:
+            initMeal.computeQuantity(
+                targetCal, extraDict, self.dataNutrimentByRU
+            )
+            if initMeal.isPossible:
                 self.mealList.append(initMeal)
-                initMeal.environmental5D = EnvironmentalImpact()
-                initMeal.environmental5D.compute5D(
+                initMeal.environmental5D = EnvironmentalImpact(
                     initMeal,
                     self.dataEnvironmental,
                     EnvironmentalDatabase.envName,
@@ -48,10 +61,11 @@ class MealSet:
     def printHistEnv(self, envData: EnvironmentalDatabase) -> None:
         dictEnv = {}
         for meal in self.mealList:
-            print("lol")
             for ind, unit in enumerate(envData.envName):
                 if unit in dictEnv:
-                    dictEnv[unit].append(meal.environmental5D.list5D[ind])
+                    dictEnv[unit].append(
+                        list(meal.environmental5D.dict5D.values())[ind]
+                    )
                 else:
                     dictEnv[unit] = []
         for i in range(5):

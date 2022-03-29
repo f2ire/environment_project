@@ -1,4 +1,5 @@
 import numpy as np
+from environmental_impact import EnvironmentalImpact
 
 
 class Meal:
@@ -7,7 +8,8 @@ class Meal:
     ):
         self.productList = [prot, carb, fat, vege, fruit, extra]
         self.productQuantity = []
-        self.environmental5D = []
+        self.environmental5D: EnvironmentalImpact = {}
+        self.isPossible = True
 
     def __repr__(self) -> str:
         return (
@@ -16,17 +18,28 @@ class Meal:
             + f"{self.environmental5D} : list Env5D"
         )
 
-    def computeQuantity(self, user, dictByRU):
-        targetCal = user.dailyEnergyRequirement * 0.4
+    def computePossible(self):
+        if self.productQuantity == []:
+            self.isPossible = False
+
+    def isImpactTooBig(self, threshold):
+        # print(threshold)
+        # print(list(self.environmental5D.dict5D.values()))
+        for i, val in enumerate(threshold):
+            if list(self.environmental5D.dict5D.values())[i] > val:
+                return True
+
+        # print("c'est passé Merde ______________________________")
+
+    def computeQuantity(self, targetCal, extraDict, dictByRU):
         meal = self.productList
-        extraDict = user.dictExtraQuantity
         proteinDict = dictByRU["gFatPerRetailUnit"]
         fatDict = dictByRU["gProteinPerRetailUnit"]
         carbohydrateDict = dictByRU["gCarbPerRetailUnit"]
         """
         Compute the quantity of g needed for the meal for each component
         and return a list [qProtSource, qCarbSource, qFatSource, qVegetable,"\
-                    qFruit, qExtr²a]
+                    qFruit, qExtra]
         """
         qVeg = 0.125
         qFruit = 0.05
@@ -67,6 +80,7 @@ class Meal:
         qValues = np.linalg.solve(coef, const)
         for elem in qValues:  # Test of no null values
             if elem < 0:
+                self.computePossible()
                 return None
         self.productQuantity = [
             qValues[0],

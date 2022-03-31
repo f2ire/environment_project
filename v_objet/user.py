@@ -56,9 +56,9 @@ class User:
         ]
         textToPrint = [
             "Select your gender (M/F) : \n",
-            "Precise your age in years : \n",
             "Precise your body weigh in Kg : \n",
             "Precise your heigh in cm : \n",
+            "Precise your age in years : \n",
             "Precise your activity level:\n"
             f"Press 1 for {activityLvl[0]}\n"
             f"Press 2 for {activityLvl[1]}\n"
@@ -186,8 +186,7 @@ class User:
             newUser = User()
             if not default:
                 newUser.askStatUser()
-            if GoodInput.isInputYes("Do you want to keep extra setting ?"):
-                newUser.extraQuantity(nutriDict)
+            newUser.extraQuantity(nutriDict)
             with open(filename, "wb") as file:
                 pickle.dump(newUser, file)
             return newUser

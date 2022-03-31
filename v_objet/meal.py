@@ -79,7 +79,7 @@ class Meal:
 
         qValues = np.linalg.solve(coef, const)
         for elem in qValues:  # Test of no null values
-            if elem < 0:
+            if elem <= 0:
                 self.computePossible()
                 return None
         self.productQuantity = [

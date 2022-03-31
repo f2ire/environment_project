@@ -1,4 +1,3 @@
-from turtle import update
 from meal import Meal
 import itertools
 from nutrition_database import NutritionDataBase
@@ -18,20 +17,22 @@ class MealSet:
         self.dataNutrimentByRU = dataNutriment.foodByTypeOfRetailUnit
         self.dataEnvironmental = dataEnviron.envDict
         self.mealList: list[Meal] = []
+        self.niceMealList = []
 
     def __repr__(self) -> str:
         return str(self.mealList)
 
     def updateMealList(self, user: User):
+        newMealList = []
         for meal in self.mealList:
             if meal.isPossible:
-                if meal.isImpactTooBig(user.threshold):
-                    # print("-1")
-                    self.mealList.remove(meal)
-            else:
-                # print("-&")
-                self.mealList.remove(meal)
-            print("zezqd")
+                if not meal.isImpactTooBig(user.threshold):
+                    newMealList.append(meal)
+        self.mealList = newMealList
+
+    def computeNiceMealList(self):
+        for meal in self.mealList:
+            self.niceMealList.append((meal.productList, meal.productQuantity))
 
     def computeMealList(self, targetCal, extraDict) -> list:
         for meal in list(
@@ -70,7 +71,7 @@ class MealSet:
                     dictEnv[unit] = []
         for i in range(5):
             plt.subplot(3, 2, i + 1)
-            plt.hist(dictEnv[envData.envName[i]])
+            plt.hist(dictEnv[envData.envName[i]], bins=35)
             plt.title(envData.envName[i])
             plt.ylabel("Number of Meal")
             plt.xlabel(envData.envName[i])

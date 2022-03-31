@@ -1,3 +1,4 @@
+from fileHandler import FileHandler
 from nutrition_database import NutritionDataBase
 from enivornmental_database import EnvironmentalDatabase
 from user import User
@@ -13,11 +14,11 @@ if __name__ == "__main__":
     b.computeDictByTypeOfRetailUnit()
 
     a = MealSet(b, c)
-    yo = User.chooseUser("user_file", a.dataNutrimentByProduct, True)
+    yo = User.chooseUser("user_file", a.dataNutrimentByProduct, default=False)
 
     yo.computeAllUserThing()
     a.computeMealList(yo.dailyEnergyRequirement * 0.4, yo.dictExtraQuantity)
     yo.thresholdsEnvimpact(a, c)
-    print(len(a.mealList))
     a.updateMealList(yo)
-    print(len(a.mealList))
+    a.computeNiceMealList()
+    FileHandler.saveData("meal_list", a.niceMealList)

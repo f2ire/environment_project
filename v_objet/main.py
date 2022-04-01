@@ -14,7 +14,7 @@ if __name__ == "__main__":
     b.computeDictByTypeOfRetailUnit()
 
     a = MealSet(b, c)
-    yo = User.chooseUser("user_file", a.dataNutrimentByProduct, default=False)
+    yo = User.chooseUser("user_file", a.dataNutrimentByProduct, default=True)
 
     yo.computeAllUserThing()
     a.computeMealList(yo.dailyEnergyRequirement * 0.4, yo.dictExtraQuantity)
